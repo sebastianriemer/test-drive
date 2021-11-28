@@ -1,7 +1,7 @@
 (function(){
     "use strict";
-    let canvas;
-    let context;
+    let canvas, mapDebugCanvas;
+    let context, mapDebugContext;
     let audioContext;
     let map = {};
     let partyMembers = [];
@@ -19,6 +19,7 @@
         loadSources();
         initAudio();
         initCanvas();
+        initMapDebugCanvas();
         initMenu();
     }
 
@@ -41,6 +42,12 @@
     function initWorldMap(worldMap, partyPosition) {
         map.worldMap = worldMap;
         map.partyPosition = partyPosition;
+        let mapImage = new Image();
+        mapImage.src = worldMap.resourceFilename;
+        mapImage.onload = function() {
+            map.mapImage = mapImage
+        }
+
     }
 
     function initParty(party) {
@@ -72,6 +79,10 @@
     function initCanvas() {
         canvas = document.getElementById('canvas');
         context = canvas.getContext('2d');
+    }
+    function initMapDebugCanvas() {
+        mapDebugCanvas = document.getElementById('mapDebugCanvas');
+        mapDebugContext = mapDebugCanvas.getContext('2d');
     }
 
     function initMenu() {
@@ -117,7 +128,21 @@
         drawRuneTable();
         drawPartyBar();
         drawTextWindow();
+        drawDebugMap();
         drawMainWindow();
+    }
+
+    function drawDebugMap() {
+        if (map.mapImage) {
+            mapDebugContext.drawImage(map.mapImage, 0, 0, 60*4, 69*4);
+            mapDebugContext.fillStyle = '#E200BD';
+            mapDebugContext.fillRect(map.partyPosition.x*3*4, map.partyPosition.y*3*4, 3*4, 3*4);
+        }
+    }
+
+    function drawBlockOnDebugMap(block) {
+        mapDebugContext.strokeStyle = '#FFD800';
+        mapDebugContext.strokeRect((block.x*3*4)-1, (block.y*3*4)-1, (3*4)+1, (3*4)+1);
     }
 
     function drawRuneTable() {
@@ -153,97 +178,144 @@
         context.fillRect(90, 161, 265, 114);
 
         context.beginPath();
-        context.moveTo(90, 33);
-        context.lineTo(355, 275);
         context.lineWidth = 1;
-        context.moveTo(90, 275);
-        context.lineTo(355, 33);
-        context.moveTo(198, 10);
-        context.lineTo(198, 275);
-        context.moveTo(188, 10);
-        context.lineTo(188, 275);
-        context.moveTo(156, 10);
-        context.lineTo(156, 275);
 
-        context.moveTo(247, 10);
-        context.lineTo(247, 275);
-        context.moveTo(256, 10);
-        context.lineTo(256, 275);
-        context.moveTo(288, 10);
-        context.lineTo(288, 275);
+        // Diagonalen
+        context.moveTo(90, 33);
+       context.lineTo(355, 275);
+       context.moveTo(90, 275);
+       context.lineTo(355, 33);
 
-        // set line color
+       context.moveTo(90, 132);
+       context.lineTo(355, 176);
+       context.moveTo(355, 132);
+       context.lineTo(90, 176)
+
+      context.moveTo(90, 117);
+      context.lineTo(355, 191);
+      context.moveTo(355, 117);
+      context.lineTo(90, 191)
+        //
         context.strokeStyle = '#ff0000';
         context.stroke();
+        context.beginPath();
+        // linke Senkrechten Ebene 4
+        context.moveTo(198, 10);
+        context.lineTo(198, 275);
+        context.moveTo(149, 10);
+        context.lineTo(149, 275);
+        context.moveTo(100, 10);
+        context.lineTo(100, 275);
+        // rechte Senkrechten Ebene 4
+        context.moveTo(247, 10);
+        context.lineTo(247, 275);
+        context.moveTo(296, 10);
+        context.lineTo(296, 275);
+        context.moveTo(345, 10);
+        context.lineTo(345, 275);
 
-        drawFarthestRow();
-        drawMiddleRow();
-        drawNearestRow();
+/*        // linke Senkrechten Ebene 3
+        context.moveTo(198, 10);
+        context.lineTo(198, 275);
+        context.moveTo(149, 10);
+        context.lineTo(149, 275);
+        context.moveTo(100, 10);
+        context.lineTo(100, 275);
+        // rechte Senkrechten Ebene 3
+        context.moveTo(247, 10);
+        context.lineTo(247, 275);
+        context.moveTo(296, 10);
+        context.lineTo(296, 275);
+        context.moveTo(345, 10);
+        context.lineTo(345, 275);*/
+
+        context.strokeStyle = '#00F0E5';
+        context.stroke();
+        context.beginPath();
+         // linke Senkrechten Ebene 2
+        context.moveTo(50, 10);
+        context.lineTo(50, 275);
+        context.moveTo(119, 10);
+        context.lineTo(119, 275);
+        context.moveTo(188, 10);
+        context.lineTo(188, 275);
+        // rechte Senkrechten Ebene 2
+        context.moveTo(257, 10);
+        context.lineTo(257, 275);
+        context.moveTo(326, 10);
+        context.lineTo(326, 275);
+        context.moveTo(395, 10);
+        context.lineTo(395, 275);
+
+        context.strokeStyle = '#00BEE5';
+        context.stroke();
+        context.beginPath();
+        /*
+        // linke Senkrechte Ebene 1
+        context.moveTo(156, 10);
+        context.lineTo(156, 275);
+        // rechte Senkrechte Ebene 1
+        context.moveTo(288, 10);
+        context.lineTo(288, 275);
+        context.strokeStyle = '#0088E5';
+        context.stroke();*/
+        context.beginPath();
+
+        drawBlockRow(4);
+        drawBlockRow(3);
+        drawBlockRow(2);
+        drawBlockRow(1);
        // drawSingleFrontWall();
+       context.beginPath();
+       context.lineWidth = 1;
+
+       // Diagonalen
+       context.moveTo(90, 33);
+       context.lineTo(355, 275);
+       context.moveTo(90, 275);
+       context.lineTo(355, 33);
+
+       context.moveTo(90, 132);
+       context.lineTo(355, 176);
+       context.moveTo(355, 132);
+       context.lineTo(90, 176)
+
+      context.moveTo(90, 117);
+      context.lineTo(355, 191);
+      context.moveTo(355, 117);
+      context.lineTo(90, 191)
+
+       context.strokeStyle = '#ff0000';
+       context.stroke();
+       context.beginPath();
     }
 
-    function drawFarthestRow() {
-        let leftBlockX = calulateLeftBlockX(3);
-        let leftBlockY = calulateLeftBlockY(3);
-        let centerBlockX = calulateCenterBlockX(3);
-        let centerBlockY = calulateCenterBlockY(3);
-        let rightBlockX = calulateRightBlockX(3);
-        let rightBlockY = calulateRightBlockY(3);
+    function drawBlockRow(row) {
+        let secondLeftBlock = map.worldMap.blockMap[calulate2ndLeftBlockY(row)][calulate2ndLeftBlockX(row)];
+        let leftBlock = map.worldMap.blockMap[calulateLeftBlockY(row)][calulateLeftBlockX(row)];
+        let centerBlock = map.worldMap.blockMap[calulateCenterBlockY(row)][calulateCenterBlockX(row)];
+        let rightBlock = map.worldMap.blockMap[calulateRightBlockY(row)][calulateRightBlockX(row)];
+        let secondRightBlock = map.worldMap.blockMap[calulate2ndRightBlockY(row)][calulate2ndRightBlockX(row)];
 
-        let leftBlock = map.worldMap.blockMap[leftBlockY][leftBlockX];
-        let centerBlock = map.worldMap.blockMap[centerBlockY][centerBlockX];
-        let rightBlock = map.worldMap.blockMap[rightBlockY][rightBlockX];
+        drawBlockAs2ndLeft(secondLeftBlock, row);
+        drawBlockAs2ndRight(secondRightBlock, row);
+        drawBlockAsLeft(leftBlock, row);
+        drawBlockAsRight(rightBlock, row);;
+        drawBlockAsCenter(centerBlock, row);
 
 
-        drawBlockAsLeft(leftBlock, 3);// 197, 262);
-        drawBlockAsCenter(centerBlock, 3);// 207, 272);
-        drawBlockAsRight(rightBlock, 3);// 255, 271);
-
-        return undefined;
     }
 
-    function drawMiddleRow() {
-        let leftBlockX = calulateLeftBlockX(2);
-        let leftBlockY = calulateLeftBlockY(2);
-        let centerBlockX = calulateCenterBlockX(2);
-        let centerBlockY = calulateCenterBlockY(2);
-        let rightBlockX = calulateRightBlockX(2);
-        let rightBlockY = calulateRightBlockY(2);
-
-        let leftBlock = map.worldMap.blockMap[leftBlockY][leftBlockX];
-        let centerBlock = map.worldMap.blockMap[centerBlockY][centerBlockX];
-        let rightBlock = map.worldMap.blockMap[rightBlockY][rightBlockX];
-
-        drawBlockAsLeft(leftBlock, 2);// 197, 262);
-        drawBlockAsCenter(centerBlock, 2);// 207, 272);
-        drawBlockAsRight(rightBlock, 2);// 255, 271);
-    }
-
-    function drawNearestRow() {
-        let leftBlockX = calulateLeftBlockX(1);
-        let leftBlockY = calulateLeftBlockY(1);
-        let centerBlockX = calulateCenterBlockX(1);
-        let centerBlockY = calulateCenterBlockY(1);
-        let rightBlockX = calulateRightBlockX(1);
-        let rightBlockY = calulateRightBlockY(1);
-
-        let leftBlock = map.worldMap.blockMap[leftBlockY][leftBlockX];
-        let centerBlock = map.worldMap.blockMap[centerBlockY][centerBlockX];
-        let rightBlock = map.worldMap.blockMap[rightBlockY][rightBlockX];
-
-        drawBlockAsLeft(leftBlock, 1);// 197, 262);
-        drawBlockAsCenter(centerBlock, 1);// 207, 272);
-        drawBlockAsRight(rightBlock, 1);// 255, 271);
-    }
-
-
-    function drawBlockAsLeft(block, row) {
+    function drawBlockAs2ndLeft(block, row) {
+        drawBlockOnDebugMap(block);
         let wallTextureFacingTowards;
+        let wallTextureFacingTowardsX;
+        let wallTextureFacingTowardsY;
+        let wallTextureFacingTowardsScaleX;
+        let wallTextureFacingTowardsScaleY;
         let wallTextureFacingRight;
         let wallTextureFacingRightX;
         let wallTextureFacingRightY;
-        let wallTextureFacingTowardsX;
-        let wallTextureFacingTowardsY;
 
         if (map.partyPosition.direction === 'NORTH') {
             wallTextureFacingTowards = textureMap[block.southWall];
@@ -262,19 +334,111 @@
             wallTextureFacingRight = textureMap[block.northWall];
         }
         if (wallTextureFacingTowards) {
-            if (row == 3) {
-                wallTextureFacingTowardsX = 98;
-                wallTextureFacingTowardsY = 114;
+            if (row == 4) {
+                wallTextureFacingTowardsX = 543;
+                wallTextureFacingTowardsY = 831;
+                wallTextureFacingTowardsScaleX = .185;
+                wallTextureFacingTowardsScaleY = .16;
+                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
+            } else if (row == 3) {
+                wallTextureFacingTowardsX = 344;
+                wallTextureFacingTowardsY = 511;
+                wallTextureFacingTowardsScaleX = .262;
+                wallTextureFacingTowardsScaleY = .24;
+                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY,
+                     88);
             } else if (row == 2) {
-                wallTextureFacingTowardsX = 66;
-                wallTextureFacingTowardsY = 83;
+                // Bei dieser Nähe sieht man diesen Block gar nicht mehr
             } else {
-                wallTextureFacingTowardsX = 0;
-                wallTextureFacingTowardsY = 23;
+                 // Bei dieser Nähe sieht man diesen Block gar nicht mehr
             }
         }
         if (wallTextureFacingRight) {
-            if (row == 3) {
+            if (row == 4) {
+                wallTextureFacingRightX = 59;
+                wallTextureFacingRightY = 144;
+            } else if (row == 3) {
+                wallTextureFacingRightX = 48;
+                wallTextureFacingRightY = 144;
+            } else if (row == 2) {
+                wallTextureFacingRightX = 66;
+                wallTextureFacingRightY = 144;
+            } else {
+                wallTextureFacingRightX = 0;
+                wallTextureFacingRightY = 144;
+            }
+            transformAndDrawImage(wallTextureFacingRight, mainWindowOffsetX+wallTextureFacingRightX, mainWindowOffsetY+wallTextureFacingRightY, row, 1);
+        }
+    }
+
+    function drawBlockAsLeft(block, row) {
+        drawBlockOnDebugMap(block);
+        let wallTextureFacingTowards;
+        let wallTextureFacingTowardsX;
+        let wallTextureFacingTowardsY;
+        let wallTextureFacingTowardsScaleX;
+        let wallTextureFacingTowardsScaleY;
+        let wallTextureFacingRight;
+        let wallTextureFacingRightX;
+        let wallTextureFacingRightY;
+
+
+        if (map.partyPosition.direction === 'NORTH') {
+            wallTextureFacingTowards = textureMap[block.southWall];
+            wallTextureFacingRight = textureMap[block.eastWall];
+        }
+        else if (map.partyPosition.direction === 'EAST') {
+           wallTextureFacingTowards = textureMap[block.westWall];
+           wallTextureFacingRight = textureMap[block.southWall];
+        }
+        else if (map.partyPosition.direction === 'SOUTH') {
+            wallTextureFacingTowards = textureMap[block.northWall];
+            wallTextureFacingRight = textureMap[block.westWall];
+        }
+        else if (map.partyPosition.direction === 'WEST') {
+            wallTextureFacingTowards = textureMap[block.eastWall];
+            wallTextureFacingRight = textureMap[block.northWall];
+        }
+        if (wallTextureFacingTowards) {
+            if (row == 4) {
+               wallTextureFacingTowardsX = 805;
+               wallTextureFacingTowardsY = 831;
+               wallTextureFacingTowardsScaleX = .185;
+               wallTextureFacingTowardsScaleY = .16;
+               drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                   wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
+            } else if (row == 3) {
+                wallTextureFacingTowardsX = 454;
+                wallTextureFacingTowardsY = 511;
+                wallTextureFacingTowardsScaleX = .262;
+                wallTextureFacingTowardsScaleY = .24;
+                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
+            } else if (row == 2) {
+                wallTextureFacingTowardsX = 182;
+                wallTextureFacingTowardsY = 212;
+                wallTextureFacingTowardsScaleX = .495;
+                wallTextureFacingTowardsScaleY = .45;
+                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY,
+                    128);
+            } else {
+                wallTextureFacingTowardsX = 100;
+                wallTextureFacingTowardsY = 32;
+                wallTextureFacingTowardsScaleX = .9;
+                wallTextureFacingTowardsScaleY = .9;
+                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY,
+                    250);
+            }
+        }
+        if (wallTextureFacingRight) {
+            if (row == 4) {
+                wallTextureFacingRightX = 108;
+                wallTextureFacingRightY = 144;
+            } else if (row == 3) {
                 wallTextureFacingRightX = 98;
                 wallTextureFacingRightY = 144;
             } else if (row == 2) {
@@ -288,26 +452,66 @@
         }
     }
 
-    function drawBlockAsCenter(block, x, y) {
-        /*if (map.partyPosition.direction === 'NORTH') {
-            context.drawImage(textureMap[block.southWall], x, y);
-        }
-        else if (map.partyPosition.direction === 'EAST') {
-            context.drawImage(textureMap[block.westWall], x, y);
-        }
-        else if (map.partyPosition.direction === 'SOUTH') {
-            context.drawImage(textureMap[block.northWall], x, y);
-        }
-        else if (map.partyPosition.direction === 'WEST') {
-            context.drawImage(textureMap[block.eastWall], x, y);
-        }*/
-    }
-
-    function drawBlockAsRight(block, row) {
-
+    function drawBlockAsCenter(block, row) {
+        drawBlockOnDebugMap(block);
         let wallTextureFacingTowards;
         let wallTextureFacingTowardsX;
         let wallTextureFacingTowardsY;
+        let wallTextureFacingTowardsScaleX;
+        let wallTextureFacingTowardsScaleY;
+
+        if (map.partyPosition.direction === 'NORTH') {
+            wallTextureFacingTowards = textureMap[block.southWall];
+        }
+        else if (map.partyPosition.direction === 'EAST') {
+           wallTextureFacingTowards = textureMap[block.westWall];
+        }
+        else if (map.partyPosition.direction === 'SOUTH') {
+            wallTextureFacingTowards = textureMap[block.northWall];
+        }
+        else if (map.partyPosition.direction === 'WEST') {
+            wallTextureFacingTowards = textureMap[block.eastWall];
+        }
+        if (wallTextureFacingTowards) {
+            if (row == 4) {
+                wallTextureFacingTowardsX = 1070;
+                wallTextureFacingTowardsY = 831;
+                wallTextureFacingTowardsScaleX = .185;
+                wallTextureFacingTowardsScaleY = .16;
+                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
+            } else if (row == 3) {
+                wallTextureFacingTowardsX = 719;
+                wallTextureFacingTowardsY = 511;
+                wallTextureFacingTowardsScaleX = .262;
+                wallTextureFacingTowardsScaleY = .24;
+                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
+            } else if (row == 2) {
+                wallTextureFacingTowardsX = 316;
+                wallTextureFacingTowardsY = 212;
+                wallTextureFacingTowardsScaleX = .495;
+                wallTextureFacingTowardsScaleY = .45;
+                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
+            } else {
+                wallTextureFacingTowardsX = 115;
+                wallTextureFacingTowardsY = 32;
+                wallTextureFacingTowardsScaleX = .9;
+                wallTextureFacingTowardsScaleY = .9;
+                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
+            }
+        }
+    }
+
+    function drawBlockAsRight(block, row) {
+        drawBlockOnDebugMap(block);
+        let wallTextureFacingTowards;
+        let wallTextureFacingTowardsX;
+        let wallTextureFacingTowardsY;
+        let wallTextureFacingTowardsScaleX;
+        let wallTextureFacingTowardsScaleY;
         let wallTextureFacingLeft;
         let wallTextureFacingLeftX;
         let wallTextureFacingLeftY;
@@ -329,20 +533,44 @@
             wallTextureFacingLeft = textureMap[block.southWall];
         }
         if (wallTextureFacingTowards) {
-            if (row == 3) {
-                wallTextureFacingTowardsX = 166;
-                wallTextureFacingTowardsY = 114;
+            if (row == 4) {
+                wallTextureFacingTowardsX = 1335;
+                wallTextureFacingTowardsY = 831;
+                wallTextureFacingTowardsScaleX = .185;
+                wallTextureFacingTowardsScaleY = .16;
+                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
+            } else if (row == 3) {
+                wallTextureFacingTowardsX = 980;
+                wallTextureFacingTowardsY = 511;
+                wallTextureFacingTowardsScaleX = .262;
+                wallTextureFacingTowardsScaleY = .24;
+                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
             } else if (row == 2) {
-                wallTextureFacingTowardsX = 198;
-                wallTextureFacingTowardsY = 83;
+                wallTextureFacingTowardsX = 580
+                wallTextureFacingTowardsY = 212;
+                wallTextureFacingTowardsScaleX = .495;
+                wallTextureFacingTowardsScaleY = .45;
+                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY,
+                    0, 138);
             } else {
-                wallTextureFacingTowardsX = 0;
-                wallTextureFacingTowardsY = 23;
+                wallTextureFacingTowardsX = 378;
+                wallTextureFacingTowardsY = 32;
+                wallTextureFacingTowardsScaleX = .9;
+                wallTextureFacingTowardsScaleY = .9;
+                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY,
+                    0, 17);
             }
         }
         if (wallTextureFacingLeft) {
-            if (row == 3) {
-                wallTextureFacingLeftX = 166;
+            if (row == 4) {
+                wallTextureFacingLeftX = 157;
+                wallTextureFacingLeftY = 144;
+            } else if (row == 3) {
+                wallTextureFacingLeftX = 167;
                 wallTextureFacingLeftY = 144;
             } else if (row == 2) {
                 wallTextureFacingLeftX = 198;
@@ -355,44 +583,152 @@
         }
     }
 
-    function transformAndDrawImage(image, x, y, row, flipFactor) {
-            let width = image.width;
-            let height = image.height;
-            let scaleX;
-            let scaleY;
-            let skew;
+    function drawBlockAs2ndRight(block, row) {
+        drawBlockOnDebugMap(block);
+        let wallTextureFacingTowards;
+        let wallTextureFacingTowardsX;
+        let wallTextureFacingTowardsY;
+        let wallTextureFacingTowardsScaleX;
+        let wallTextureFacingTowardsScaleY;
+        let wallTextureFacingLeft;
+        let wallTextureFacingLeftX;
+        let wallTextureFacingLeftY;
 
-            if (row == 3) {
-                scaleX = .038;
-                scaleY = .252;
-                skew = .08;
+        if (map.partyPosition.direction === 'NORTH') {
+            wallTextureFacingTowards = textureMap[block.southWall];
+            wallTextureFacingLeft = textureMap[block.westWall];
+        }
+        else if (map.partyPosition.direction === 'EAST') {
+           wallTextureFacingTowards = textureMap[block.westWall];
+           wallTextureFacingLeft = textureMap[block.northWall];
+        }
+        else if (map.partyPosition.direction === 'SOUTH') {
+            wallTextureFacingTowards = textureMap[block.northWall];
+            wallTextureFacingLeft = textureMap[block.eastWall];
+        }
+        else if (map.partyPosition.direction === 'WEST') {
+            wallTextureFacingTowards = textureMap[block.eastWall];
+            wallTextureFacingLeft = textureMap[block.southWall];
+        }
+        if (wallTextureFacingTowards) {
+            if (row == 4) {
+                wallTextureFacingTowardsX = 1600;
+                wallTextureFacingTowardsY = 831;
+                wallTextureFacingTowardsScaleX = .185;
+                wallTextureFacingTowardsScaleY = .16;
+                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
+            } else if (row == 3) {
+                //wallTextureFacingTowardsX = 1242;
+                wallTextureFacingTowardsX = 1172;
+                wallTextureFacingTowardsY = 511;
+                wallTextureFacingTowardsScaleX = .262;
+                wallTextureFacingTowardsScaleY = .24;
+                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY,
+                    0, 182);
             } else if (row == 2) {
-                scaleX = .118;
-                scaleY = .462;
-                skew = .21;
+                wallTextureFacingTowardsX = 682;
+                wallTextureFacingTowardsY = 191;
+                wallTextureFacingTowardsScaleX = .495;
+                wallTextureFacingTowardsScaleY = .45;
+                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
+                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY,
+                    0, 182);
             } else {
-                scaleX = .247;
-                scaleY = .915;
-                skew = .455;
-            }
-
-            for (var i = 0; i <= height / 2; ++i) {
-               context.setTransform(flipFactor * scaleX, -skew * i / height, 0, scaleY, x, y);
-               context.drawImage(image, 0, height / 2 + i, width, 2, 0, 0 + i, width, 2);
-               context.setTransform(flipFactor * scaleX, skew * i / height, 0, scaleY, x, y);
-               context.drawImage(image, 0, height / 2 - i, width, 2, 0, 0 - i, width, 2);
-            }
-            context.resetTransform();
-            if (flipFactor == -1) {
-                context.fillRect(x-5,y,5,5);
-            } else {
-                context.fillRect(x,y,5,5);
+                 // Bei dieser Nähe sieht man diesen Block gar nicht mehr
             }
         }
+        if (wallTextureFacingLeft) {
+            if (row == 4) {
+                wallTextureFacingLeftX = 206;
+                wallTextureFacingLeftY = 144;
+            } else if (row == 3) {
+                wallTextureFacingLeftX = 216;
+                wallTextureFacingLeftY = 144;
+            } else if (row == 2) {
+                wallTextureFacingLeftX = 248;
+                wallTextureFacingLeftY = 144;
+            } else {
+                wallTextureFacingLeftX = 264;
+                wallTextureFacingLeftY = 144;
+            }
+            transformAndDrawImage(wallTextureFacingLeft, mainWindowOffsetX+wallTextureFacingLeftX, mainWindowOffsetY+wallTextureFacingLeftY, row, -1);
+        }
+    }
 
     function drawSingleFrontWall() {
         let centerBlockX = calulateCenterBlockX(1);
         let centerBlockY = calulateCenterBlockY(1);
+    }
+
+    function drawWallTextureFacingForwards(texture, x, y, scaleX, scaleY, offsetX, widthX) {
+        if (offsetX == undefined) {
+            offsetX = 0;
+        }
+        if (widthX == undefined) {
+            widthX = texture.width;
+        }
+        context.resetTransform();
+        context.scale(scaleX, scaleY);
+        context.drawImage(texture, offsetX, 0, widthX, texture.height, x, y, widthX, texture.height);
+        context.resetTransform();
+    }
+
+   function transformAndDrawImage(image, x, y, row, flipFactor) {
+        context.resetTransform();
+        let width = image.width;
+        let height = image.height;
+        let scaleX;
+        let scaleY;
+        let skew;
+
+        if (row == 4) {
+            scaleX = .041;
+            scaleY = .152;
+            skew = .08;
+        } else if (row == 3) {
+            scaleX = .038;
+            scaleY = .252;
+            skew = .08;
+        } else if (row == 2) {
+            scaleX = .118;
+            scaleY = .462;
+            skew = .21;
+        } else {
+            scaleX = .247;
+            scaleY = .915;
+            skew = .455;
+        }
+
+        for (var i = 0; i <= height / 2; ++i) {
+           context.setTransform(flipFactor * scaleX, -skew * i / height, 0, scaleY, x, y);
+           context.drawImage(image, 0, height / 2 + i, width, 2, 0, 0 + i, width, 2);
+           context.setTransform(flipFactor * scaleX, skew * i / height, 0, scaleY, x, y);
+           context.drawImage(image, 0, height / 2 - i, width, 2, 0, 0 - i, width, 2);
+        }
+        context.resetTransform();
+        if (flipFactor == -1) {
+            context.fillRect(x-5,y,5,5);
+        } else {
+            context.fillRect(x,y,5,5);
+        }
+    }
+
+    function calulate2ndLeftBlockX(depth) {
+        if (map.partyPosition.direction === 'NORTH') {
+            return map.partyPosition.x - 1;
+        }
+        else if (map.partyPosition.direction === 'EAST') {
+            return map.partyPosition.x + depth;
+        }
+        else if (map.partyPosition.direction === 'SOUTH') {
+            return map.partyPosition.x + 1;
+        }
+        else if (map.partyPosition.direction === 'WEST') {
+            return map.partyPosition.x - depth;
+        }
+        return undefined;
     }
 
     function calulateLeftBlockX(depth) {
@@ -429,13 +765,29 @@
 
     function calulateRightBlockX(depth) {
         if (map.partyPosition.direction === 'NORTH') {
-            return map.partyPosition.x;
+            return map.partyPosition.x + 1;
         }
         else if (map.partyPosition.direction === 'EAST') {
             return map.partyPosition.x + depth;
         }
         else if (map.partyPosition.direction === 'SOUTH') {
-            return map.partyPosition.x;
+            return map.partyPosition.x - 1;
+        }
+        else if (map.partyPosition.direction === 'WEST') {
+            return map.partyPosition.x - depth;
+        }
+        return undefined;
+    }
+
+    function calulate2ndRightBlockX(depth) {
+        if (map.partyPosition.direction === 'NORTH') {
+            return map.partyPosition.x + 1;
+        }
+        else if (map.partyPosition.direction === 'EAST') {
+            return map.partyPosition.x + depth;
+        }
+        else if (map.partyPosition.direction === 'SOUTH') {
+            return map.partyPosition.x - 1;
         }
         else if (map.partyPosition.direction === 'WEST') {
             return map.partyPosition.x - depth;
@@ -455,6 +807,22 @@
         }
         else if (map.partyPosition.direction === 'WEST') {
             return map.partyPosition.y + 1;
+        }
+        return undefined;
+    }
+
+    function calulate2ndLeftBlockY(depth) {
+        if (map.partyPosition.direction === 'NORTH') {
+            return map.partyPosition.y - depth;
+        }
+        else if (map.partyPosition.direction === 'EAST') {
+            return map.partyPosition.y - 2;
+        }
+        else if (map.partyPosition.direction === 'SOUTH') {
+            return map.partyPosition.y + depth;
+        }
+        else if (map.partyPosition.direction === 'WEST') {
+            return map.partyPosition.y + 2;
         }
         return undefined;
     }
@@ -487,6 +855,22 @@
         }
         else if (map.partyPosition.direction === 'WEST') {
             return map.partyPosition.y - 1;
+        }
+        return undefined;
+    }
+
+    function calulate2ndRightBlockY(depth) {
+        if (map.partyPosition.direction === 'NORTH') {
+            return map.partyPosition.y - depth ;
+        }
+        else if (map.partyPosition.direction === 'EAST') {
+            return map.partyPosition.y + 2;
+        }
+        else if (map.partyPosition.direction === 'SOUTH') {
+            return map.partyPosition.y + depth;
+        }
+        else if (map.partyPosition.direction === 'WEST') {
+            return map.partyPosition.y - 2;
         }
         return undefined;
     }

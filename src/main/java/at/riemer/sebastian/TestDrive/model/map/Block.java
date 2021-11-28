@@ -1,19 +1,25 @@
 package at.riemer.sebastian.TestDrive.model.map;
 
 public class Block {
-    private final int northWall;
-    private final int eastWall;
-    private final int southWall;
-    private final int westWall;
-    private final int center;
+    private final int x;
+    private final int y;
+    private final String northWall;
+    private final String eastWall;
+    private final String southWall;
+    private final String westWall;
+    private final String center;
 
 
-    public Block(int northWall,
-                 int eastWall,
-                 int southWall,
-                 int westWall,
-                 int center
+    public Block(int x,
+                 int y,
+                 String northWall,
+                 String eastWall,
+                 String southWall,
+                 String westWall,
+                 String center
     ) {
+        this.x = x;
+        this.y = y;
         this.northWall = northWall;
         this.eastWall = eastWall;
         this.southWall = southWall;
@@ -22,23 +28,39 @@ public class Block {
 
     }
 
-    public int getNorthWall() {
+    public boolean isEmpty() {
+        return
+                northWall.equals("ffffff") &&
+                eastWall.equals("ffffff") &&
+                southWall.equals("ffffff") &&
+                westWall.equals("ffffff");
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public String getNorthWall() {
         return northWall;
     }
 
-    public int getEastWall() {
+    public String getEastWall() {
         return eastWall;
     }
 
-    public int getSouthWall() {
+    public String getSouthWall() {
         return southWall;
     }
 
-    public int getWestWall() {
+    public String getWestWall() {
         return westWall;
     }
 
-    public int getCenter() {
+    public String getCenter() {
         return center;
     }
 }

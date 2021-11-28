@@ -7,9 +7,9 @@ import java.util.Map;
 public class GameState {
     private WorldMap worldMap;
     private Party party;
-    private Map<Integer, String> textureMap;
+    private Map<String, String> textureMap;
 
-    public GameState(WorldMap worldMap, Party party, Map<Integer, String> textureMap) {
+    public GameState(WorldMap worldMap, Party party, Map<String, String> textureMap) {
         this.worldMap = worldMap;
         this.party = party;
         this.textureMap = textureMap;
@@ -23,7 +23,7 @@ public class GameState {
         return party;
     }
 
-    public Map<Integer, String> getTextureMap() {
+    public Map<String, String> getTextureMap() {
         return textureMap;
     }
 }

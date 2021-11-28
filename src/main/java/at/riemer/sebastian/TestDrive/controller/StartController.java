@@ -41,12 +41,12 @@ public class StartController {
         Class clazz = TestDriveApplication.class;
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream("static/img/worlds/map.png");
         BufferedImage image = ImageIO.read(inputStream);
-        WorldMap worldMap = new WorldMap(image);
-        Map<Integer, String> textureMap = new HashMap<>();
+        WorldMap worldMap = new WorldMap(image, "img/worlds/map.png");
+        Map<String, String> textureMap = new HashMap<>();
         Resource[] resources = resourcePatternResolver.getResources("classpath:static/img/walls/*.png");
         for (int i=0; i<resources.length; i++) {
             textureMap.put(
-                    Integer.parseInt(FilenameUtils.removeExtension(resources[i].getFilename())),
+                    FilenameUtils.removeExtension(resources[i].getFilename()),
                     "img/walls/" + resources[i].getFilename()
             );
         }
@@ -60,7 +60,7 @@ public class StartController {
         party.addPartyMember(new PartyMember("Friedrich", 17, 0, "img/characters/bobby.png"));
         party.addPartyMember(new PartyMember("Kalle", 17, 0, "img/characters/kalle.png"));
 
-        party.setPartyPosition(new PartyPosition(1, 3, Direction.EAST));
+        party.setPartyPosition(new PartyPosition(1, 4, Direction.EAST));
         GameState gameState = new GameState(worldMap, party, textureMap);
         return gameState;
     }
