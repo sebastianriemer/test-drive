@@ -233,7 +233,7 @@
         context.stroke();
         context.beginPath();
          // linke Senkrechten Ebene 2
-        context.moveTo(50, 10);
+       /* context.moveTo(50, 10);
         context.lineTo(50, 275);
         context.moveTo(119, 10);
         context.lineTo(119, 275);
@@ -249,7 +249,7 @@
 
         context.strokeStyle = '#00BEE5';
         context.stroke();
-        context.beginPath();
+        context.beginPath();*/
         /*
         // linke Senkrechte Ebene 1
         context.moveTo(156, 10);
@@ -348,28 +348,37 @@
                 wallTextureFacingTowardsScaleY = .24;
                 drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
                     wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY,
-                     88);
+                     195);
             } else if (row == 2) {
                 // Bei dieser Nähe sieht man diesen Block gar nicht mehr
             } else {
                  // Bei dieser Nähe sieht man diesen Block gar nicht mehr
             }
         }
-        if (wallTextureFacingRight) {
+        if (wallTextureFacingRight && row > 1) {
             if (row == 4) {
                 wallTextureFacingRightX = 59;
                 wallTextureFacingRightY = 144;
+                transformAndDrawTexture(wallTextureFacingRight, mainWindowOffsetX+wallTextureFacingRightX, mainWindowOffsetY+wallTextureFacingRightY,
+                    row,
+                    1,
+                    -2);
             } else if (row == 3) {
-                wallTextureFacingRightX = 48;
+                wallTextureFacingRightX = 18;
                 wallTextureFacingRightY = 144;
+                transformAndDrawTexture(wallTextureFacingRight, mainWindowOffsetX+wallTextureFacingRightX, mainWindowOffsetY+wallTextureFacingRightY,
+                    row,
+                    1,
+                    -2);
             } else if (row == 2) {
-                wallTextureFacingRightX = 66;
-                wallTextureFacingRightY = 144;
-            } else {
                 wallTextureFacingRightX = 0;
                 wallTextureFacingRightY = 144;
+                transformAndDrawTexture(wallTextureFacingRight, mainWindowOffsetX+wallTextureFacingRightX, mainWindowOffsetY+wallTextureFacingRightY,
+                    row,
+                    1, -2, 218, wallTextureFacingRight.width);
+
             }
-            transformAndDrawImage(wallTextureFacingRight, mainWindowOffsetX+wallTextureFacingRightX, mainWindowOffsetY+wallTextureFacingRightY, row, 1);
+
         }
     }
 
@@ -410,9 +419,9 @@
                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
             } else if (row == 3) {
-                wallTextureFacingTowardsX = 454;
+                wallTextureFacingTowardsX = 355;
                 wallTextureFacingTowardsY = 511;
-                wallTextureFacingTowardsScaleX = .262;
+                wallTextureFacingTowardsScaleX = .305;
                 wallTextureFacingTowardsScaleY = .24;
                 drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
                     wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
@@ -426,12 +435,12 @@
                     128);
             } else {
                 wallTextureFacingTowardsX = 100;
-                wallTextureFacingTowardsY = 32;
+                wallTextureFacingTowardsY = 58;
                 wallTextureFacingTowardsScaleX = .9;
-                wallTextureFacingTowardsScaleY = .9;
+                wallTextureFacingTowardsScaleY = .81;
                 drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
                     wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY,
-                    250);
+                    245);
             }
         }
         if (wallTextureFacingRight) {
@@ -445,10 +454,13 @@
                 wallTextureFacingRightX = 66;
                 wallTextureFacingRightY = 144;
             } else {
-                wallTextureFacingRightX = 0;
+                wallTextureFacingRightX = 16;
                 wallTextureFacingRightY = 144;
             }
-            transformAndDrawImage(wallTextureFacingRight, mainWindowOffsetX+wallTextureFacingRightX, mainWindowOffsetY+wallTextureFacingRightY, row, 1);
+            transformAndDrawTexture(wallTextureFacingRight, mainWindowOffsetX+wallTextureFacingRightX, mainWindowOffsetY+wallTextureFacingRightY,
+                row,
+                1,
+                -1);
         }
     }
 
@@ -481,9 +493,9 @@
                 drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
                     wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
             } else if (row == 3) {
-                wallTextureFacingTowardsX = 719;
+                wallTextureFacingTowardsX = 720;
                 wallTextureFacingTowardsY = 511;
-                wallTextureFacingTowardsScaleX = .262;
+                wallTextureFacingTowardsScaleX = .261;
                 wallTextureFacingTowardsScaleY = .24;
                 drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
                     wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
@@ -496,9 +508,9 @@
                     wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
             } else {
                 wallTextureFacingTowardsX = 115;
-                wallTextureFacingTowardsY = 32;
+                wallTextureFacingTowardsY = 58;
                 wallTextureFacingTowardsScaleX = .9;
-                wallTextureFacingTowardsScaleY = .9;
+                wallTextureFacingTowardsScaleY = .81;
                 drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
                     wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
             }
@@ -534,16 +546,16 @@
         }
         if (wallTextureFacingTowards) {
             if (row == 4) {
-                wallTextureFacingTowardsX = 1335;
+                wallTextureFacingTowardsX = 1339;
                 wallTextureFacingTowardsY = 831;
                 wallTextureFacingTowardsScaleX = .185;
                 wallTextureFacingTowardsScaleY = .16;
                 drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
                     wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
             } else if (row == 3) {
-                wallTextureFacingTowardsX = 980;
+                wallTextureFacingTowardsX = 840;
                 wallTextureFacingTowardsY = 511;
-                wallTextureFacingTowardsScaleX = .262;
+                wallTextureFacingTowardsScaleX = .305;
                 wallTextureFacingTowardsScaleY = .24;
                 drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
                     wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
@@ -556,13 +568,13 @@
                     wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY,
                     0, 138);
             } else {
-                wallTextureFacingTowardsX = 378;
-                wallTextureFacingTowardsY = 32;
+                wallTextureFacingTowardsX = 374;
+                wallTextureFacingTowardsY = 58;
                 wallTextureFacingTowardsScaleX = .9;
-                wallTextureFacingTowardsScaleY = .9;
+                wallTextureFacingTowardsScaleY = .81;
                 drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
                     wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY,
-                    0, 17);
+                    0, 20);
             }
         }
         if (wallTextureFacingLeft) {
@@ -576,10 +588,11 @@
                 wallTextureFacingLeftX = 198;
                 wallTextureFacingLeftY = 144;
             } else {
-                wallTextureFacingLeftX = 264;
+                wallTextureFacingLeftX = 247;
                 wallTextureFacingLeftY = 144;
             }
-            transformAndDrawImage(wallTextureFacingLeft, mainWindowOffsetX+wallTextureFacingLeftX, mainWindowOffsetY+wallTextureFacingLeftY, row, -1);
+            transformAndDrawTexture(wallTextureFacingLeft, mainWindowOffsetX+wallTextureFacingLeftX, mainWindowOffsetY+wallTextureFacingLeftY,
+            row, -1, 1);
         }
     }
 
@@ -620,40 +633,39 @@
                     wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY);
             } else if (row == 3) {
                 //wallTextureFacingTowardsX = 1242;
-                wallTextureFacingTowardsX = 1172;
+                wallTextureFacingTowardsX = 1286;
                 wallTextureFacingTowardsY = 511;
                 wallTextureFacingTowardsScaleX = .262;
                 wallTextureFacingTowardsScaleY = .24;
                 drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
                     wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY,
-                    0, 182);
+                    0, 70);
             } else if (row == 2) {
-                wallTextureFacingTowardsX = 682;
-                wallTextureFacingTowardsY = 191;
-                wallTextureFacingTowardsScaleX = .495;
-                wallTextureFacingTowardsScaleY = .45;
-                drawWallTextureFacingForwards(wallTextureFacingTowards, wallTextureFacingTowardsX,
-                    wallTextureFacingTowardsY, wallTextureFacingTowardsScaleX, wallTextureFacingTowardsScaleY,
-                    0, 182);
+                  // Bei dieser Nähe sieht man diesen Block gar nicht mehr
             } else {
-                 // Bei dieser Nähe sieht man diesen Block gar nicht mehr
+                   // Bei dieser Nähe sieht man diesen Block gar nicht mehr
             }
         }
-        if (wallTextureFacingLeft) {
+        if (wallTextureFacingLeft && row > 1) {
             if (row == 4) {
                 wallTextureFacingLeftX = 206;
                 wallTextureFacingLeftY = 144;
+                transformAndDrawTexture(wallTextureFacingLeft, mainWindowOffsetX+wallTextureFacingLeftX, mainWindowOffsetY+wallTextureFacingLeftY,
+                    row, -1,
+                    2);
             } else if (row == 3) {
-                wallTextureFacingLeftX = 216;
+                wallTextureFacingLeftX = 247;
                 wallTextureFacingLeftY = 144;
+                transformAndDrawTexture(wallTextureFacingLeft, mainWindowOffsetX+wallTextureFacingLeftX, mainWindowOffsetY+wallTextureFacingLeftY,
+                    row, -1,
+                    2);
             } else if (row == 2) {
-                wallTextureFacingLeftX = 248;
+                wallTextureFacingLeftX = 266;
                 wallTextureFacingLeftY = 144;
-            } else {
-                wallTextureFacingLeftX = 264;
-                wallTextureFacingLeftY = 144;
+                transformAndDrawTexture(wallTextureFacingLeft, mainWindowOffsetX+wallTextureFacingLeftX, mainWindowOffsetY+wallTextureFacingLeftY,
+                    row, -1, 2, 216, wallTextureFacingLeft.width);
             }
-            transformAndDrawImage(wallTextureFacingLeft, mainWindowOffsetX+wallTextureFacingLeftX, mainWindowOffsetY+wallTextureFacingLeftY, row, -1);
+
         }
     }
 
@@ -675,39 +687,68 @@
         context.resetTransform();
     }
 
-   function transformAndDrawImage(image, x, y, row, flipFactor) {
+   function transformAndDrawTexture(texture, x, y, row, flipFactor, columnIdx, offsetX, widthX) {
+        if (offsetX == undefined) {
+           offsetX = 0;
+        }
+        if (widthX == undefined) {
+           widthX = texture.width;
+        }
         context.resetTransform();
-        let width = image.width;
-        let height = image.height;
+        let height = texture.height;
         let scaleX;
         let scaleY;
         let skew;
 
         if (row == 4) {
-            scaleX = .041;
-            scaleY = .152;
+            if (Math.abs(columnIdx) == 2) {
+                scaleX = .141;
+            } else if (Math.abs(columnIdx) == 1) {
+                scaleX = .047;
+            } else {
+                // nichts nötig;
+            }
+            scaleY = .162;
             skew = .08;
         } else if (row == 3) {
-            scaleX = .038;
-            scaleY = .252;
+            if (Math.abs(columnIdx) == 2) {
+                scaleX = .148;
+            } else if (Math.abs(columnIdx) == 1) {
+                scaleX = .038;
+            } else {
+                // nichts nötig;
+            }
+            scaleY = .240;
             skew = .08;
         } else if (row == 2) {
-            scaleX = .118;
-            scaleY = .462;
+            if (Math.abs(columnIdx) == 2) {
+                scaleX = .388;
+                scaleY = .284;
+            } else if (Math.abs(columnIdx) == 1) {
+                scaleX = .118;
+                scaleY = .462;
+            } else {
+                // nichts nötig;
+            }
+
             skew = .21;
         } else {
-            scaleX = .247;
-            scaleY = .915;
-            skew = .455;
+            scaleX = .183;
+            scaleY = .805;
+            skew = .340;
         }
 
         for (var i = 0; i <= height / 2; ++i) {
            context.setTransform(flipFactor * scaleX, -skew * i / height, 0, scaleY, x, y);
-           context.drawImage(image, 0, height / 2 + i, width, 2, 0, 0 + i, width, 2);
+           context.drawImage(texture, offsetX, height / 2 + i, widthX, 2, 0, 0 + i, widthX, 2);
            context.setTransform(flipFactor * scaleX, skew * i / height, 0, scaleY, x, y);
-           context.drawImage(image, 0, height / 2 - i, width, 2, 0, 0 - i, width, 2);
+           context.drawImage(texture, offsetX, height / 2 - i, widthX, 2, 0, 0 - i, widthX, 2);
         }
         context.resetTransform();
+        if (row == 2 && Math.abs(columnIdx) == 2) {
+            let itbe = 0;
+        }
+
         if (flipFactor == -1) {
             context.fillRect(x-5,y,5,5);
         } else {
