@@ -1,11 +1,14 @@
 # test-drive
-My first try on implementing a browser game in the style of the old amiga game Spirit Of Adventure.
+My first try on implementing a browser game in the style of the old amiga game 'Spirit Of Adventure' by Attic.
 
 Currently some images are painted on a canvas, prototype-functions for playing audio and going fullscreen exist.
 A mechanism for world map loading is implemented;
 
+Painting the world in pseudo 3d is near completion!
+Started to implement cursor controls for moving around.
+
+Using require.js for better code modularization.
+
 Next: 
-- mapping and drawing the wall textures as derived from the parties' position and the world map
-- keyboard events for navigating through the world map
 - collision detection
-- tidying up javascript by introducing a client-framework
+- some improvements on world painting
