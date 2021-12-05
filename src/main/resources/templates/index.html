@@ -30,7 +30,8 @@
         </div>
 
         <div th:text="'It is, ' + ${nowDateTime} + '!'"></div>
-        <audio src="/audio/testDrive.ogg" crossorigin="anonymous" ></audio>
+        <audio id="backgroundMusic1" src="/audio/testDrive.ogg" crossorigin="anonymous" ></audio>
+        <audio id="sampleAh" src="audio/ah.ogg" crossorigin="anonymous" ></audio>
         <button id="startFullScreen">Go FullScreen</button>
         <button id="playAudio">Music on</button>
         <script data-main="/js/main" src="/js/require.js"></script>

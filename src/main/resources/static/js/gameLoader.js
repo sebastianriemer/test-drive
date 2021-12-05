@@ -1,4 +1,5 @@
-define([], function () {
+define(['audio'], function (Audio) {
+    let audio = new Audio();
     let map = {};
     let partyMembers = [];
     let textureMap = {textureCount : 0};
@@ -9,6 +10,16 @@ define([], function () {
         this.map = map;
         this.partyMembers = partyMembers;
         this.textureMap = textureMap;
+
+        this.getTexture = function(texture) {
+            if (texture === 'ffffff') {
+                return undefined;
+            }
+            if (textureMap[texture]) {
+                return textureMap[texture];
+            }
+            return textureMap['000000'];
+        }
 
         this.loaded = function() {
             if (map !== undefined
@@ -35,25 +46,59 @@ define([], function () {
 
         this.moveForward = function() {
             if (this.map.partyPosition.direction == 'NORTH') {
-                this.map.partyPosition.y -= 1;
+                if (!map.worldMap.blockMap[this.map.partyPosition.y-1][this.map.partyPosition.x].southWall.solid) {
+                    this.map.partyPosition.y -= 1;
+                } else {
+                    audio.playSound("ungh");
+                }
             } else if (this.map.partyPosition.direction == 'EAST') {
-                this.map.partyPosition.x += 1;
+            if (!map.worldMap.blockMap[this.map.partyPosition.y][this.map.partyPosition.x+1].westWall.solid) {
+                    this.map.partyPosition.x += 1;
+                } else {
+                    audio.playSound("ungh");
+                }
             } else if (this.map.partyPosition.direction == 'SOUTH') {
-                this.map.partyPosition.y += 1;
+                if (!map.worldMap.blockMap[this.map.partyPosition.y+1][this.map.partyPosition.x].northWall.solid) {
+                    this.map.partyPosition.y += 1;
+                } else {
+                    audio.playSound("ungh");
+                }
             } else if (this.map.partyPosition.direction == 'WEST') {
-                this.map.partyPosition.x -= 1;
+                if (!map.worldMap.blockMap[this.map.partyPosition.y][this.map.partyPosition.x-1].eastWall.solid) {
+                    this.map.partyPosition.x -= 1;
+                } else {
+                    audio.playSound("ungh");
+                }
             }
         }
 
         this.moveBackward = function() {
             if (this.map.partyPosition.direction == 'NORTH') {
-                this.map.partyPosition.y += 1;
-            } else if (this.map.partyPosition.direction == 'EAST') {
-                this.map.partyPosition.x -= 1;
+                if (!map.worldMap.blockMap[this.map.partyPosition.y+1][this.map.partyPosition.x].northWall.solid) {
+                    this.map.partyPosition.y += 1;
+                } else {
+                    audio.playSound("ungh");
+                }
+            }
+            else if (this.map.partyPosition.direction == 'EAST') {
+                if (!map.worldMap.blockMap[this.map.partyPosition.y][this.map.partyPosition.x-1].eastWall.solid) {
+                    this.map.partyPosition.x -= 1;
+                } else {
+                    audio.playSound("ungh");
+                }
             } else if (this.map.partyPosition.direction == 'SOUTH') {
-                this.map.partyPosition.y -= 1;
+                if (!map.worldMap.blockMap[this.map.partyPosition.y-1][this.map.partyPosition.x].southWall.solid) {
+                    this.map.partyPosition.y -= 1;
+                } else {
+                    audio.playSound("ungh");
+                }
             } else if (this.map.partyPosition.direction == 'WEST') {
-                this.map.partyPosition.x += 1;
+                if (!map.worldMap.blockMap[this.map.partyPosition.y][this.map.partyPosition.x+1].westWall.solid) {
+                    this.map.partyPosition.x += 1;
+                 } else {
+                    audio.playSound("ungh");
+                }
+
             }
         }
 

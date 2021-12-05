@@ -3,11 +3,12 @@ package at.riemer.sebastian.TestDrive.model.map;
 public class Block {
     private final int x;
     private final int y;
-    private final String northWall;
-    private final String eastWall;
-    private final String southWall;
-    private final String westWall;
+    private final Wall northWall;
+    private final Wall eastWall;
+    private final Wall southWall;
+    private final Wall westWall;
     private final String center;
+
 
 
     public Block(int x,
@@ -20,20 +21,20 @@ public class Block {
     ) {
         this.x = x;
         this.y = y;
-        this.northWall = northWall;
-        this.eastWall = eastWall;
-        this.southWall = southWall;
-        this.westWall = westWall;
+        this.northWall = new Wall(northWall);
+        this.eastWall = new Wall(eastWall);
+        this.southWall = new Wall(southWall);
+        this.westWall = new Wall(westWall);
         this.center = center;
 
     }
 
     public boolean isEmpty() {
         return
-                northWall.equals("ffffff") &&
-                eastWall.equals("ffffff") &&
-                southWall.equals("ffffff") &&
-                westWall.equals("ffffff");
+            northWall.equals("ffffff") &&
+            eastWall.equals("ffffff") &&
+            southWall.equals("ffffff") &&
+            westWall.equals("ffffff");
     }
 
     public int getX() {
@@ -44,19 +45,19 @@ public class Block {
         return y;
     }
 
-    public String getNorthWall() {
+    public Wall getNorthWall() {
         return northWall;
     }
 
-    public String getEastWall() {
+    public Wall getEastWall() {
         return eastWall;
     }
 
-    public String getSouthWall() {
+    public Wall getSouthWall() {
         return southWall;
     }
 
-    public String getWestWall() {
+    public Wall getWestWall() {
         return westWall;
     }
 

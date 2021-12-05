@@ -60,7 +60,7 @@ public class StartController {
         party.addPartyMember(new PartyMember("Friedrich", 17, 0, "img/characters/bobby.png"));
         party.addPartyMember(new PartyMember("Kalle", 17, 0, "img/characters/kalle.png"));
 
-        party.setPartyPosition(new PartyPosition(12, 8, Direction.WEST));
+        party.setPartyPosition(new PartyPosition(1, 1, Direction.WEST));
         GameState gameState = new GameState(worldMap, party, textureMap);
         return gameState;
     }
