@@ -2,7 +2,7 @@ package at.riemer.sebastian.TestDrive.controller;
 
 import at.riemer.sebastian.TestDrive.TestDriveApplication;
 import at.riemer.sebastian.TestDrive.model.*;
-import at.riemer.sebastian.TestDrive.model.map.WorldMap;
+import at.riemer.sebastian.TestDrive.model.map.RegionalMap;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -39,18 +39,25 @@ public class StartController {
     @ResponseBody
     public GameState getGameState(@PathVariable(required = true) String playerName) throws IOException {
         Class clazz = TestDriveApplication.class;
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("static/img/worlds/map.png");
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("static/img/worlds/abalon/map.png");
         BufferedImage image = ImageIO.read(inputStream);
-        WorldMap worldMap = new WorldMap(image, "img/worlds/map.png");
-        Map<String, String> textureMap = new HashMap<>();
-        Resource[] resources = resourcePatternResolver.getResources("classpath:static/img/walls/*.png");
-        for (int i=0; i<resources.length; i++) {
-            textureMap.put(
-                    FilenameUtils.removeExtension(resources[i].getFilename()),
-                    "img/walls/" + resources[i].getFilename()
+        RegionalMap regionalMap = new RegionalMap(image, "img/worlds/abalon/map.png");
+        Map<String, String> wallMap = new HashMap<>();
+        Resource[] wallResources = resourcePatternResolver.getResources("classpath:static/img/walls/*.png");
+        for (int i = 0; i < wallResources.length; i++) {
+            wallMap.put(
+                    FilenameUtils.removeExtension(wallResources[i].getFilename()),
+                    "img/walls/" + wallResources[i].getFilename()
             );
         }
-
+        Map<String, String> roomMap = new HashMap<>();
+        Resource[] roomResources = resourcePatternResolver.getResources("classpath:static/img/rooms/*.png");
+        for (int i = 0; i < roomResources.length; i++) {
+            roomMap.put(
+                    FilenameUtils.removeExtension(roomResources[i].getFilename()),
+                    "img/rooms/" + roomResources[i].getFilename()
+            );
+        }
 
         Party party = new Party();
         party.addPartyMember(new PartyMember("Carmen", 4, 12, "img/characters/carmen.png"));
@@ -60,8 +67,8 @@ public class StartController {
         party.addPartyMember(new PartyMember("Friedrich", 17, 0, "img/characters/bobby.png"));
         party.addPartyMember(new PartyMember("Kalle", 17, 0, "img/characters/kalle.png"));
 
-        party.setPartyPosition(new PartyPosition(1, 1, Direction.WEST));
-        GameState gameState = new GameState(worldMap, party, textureMap);
+        party.setPartyPosition(new PartyPosition(1, 1, Direction.NORTH));
+        GameState gameState = new GameState(regionalMap, party, wallMap, roomMap);
         return gameState;
     }
 }

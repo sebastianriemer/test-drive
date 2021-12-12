@@ -1,35 +1,35 @@
-define(['canvas', 'gameLoader'], function (Canvas, GameLoader) {
+define(['canvas', 'gameState'], function (Canvas, GameState) {
     let canvas = new Canvas();
-    let gameLoader = new GameLoader();
-    let map = gameLoader.map;
-    let textureMap = gameLoader.textureMap;
+    let gameState = new GameState();
+    let map = gameState.map;
+    let textureMap = gameState.textureMap;
     const mainWindowOffsetX = 90;
     const mainWindowOffsetY = 10;
 
     let returnedModule = function() {
         this.draw = function() {
-            if (gameLoader.loaded()) {
+            if (gameState.loaded()) {
                 drawDebugMap();
-                drawMainWindow();
+                draw();
             } else {
-                console.log('GameLoader not yet loaded.')
+                console.log('GameState not yet loaded.')
             }
         }
     }
 
     function drawDebugMap() {
-        if (gameLoader.map.mapImage) {
-            canvas.contextHolder.mapDebugContext.drawImage(gameLoader.map.mapImage, 0, 0, 60*4, 69*4);
+        if (gameState.map.mapImage) {
+            canvas.contextHolder.mapDebugContext.drawImage(gameState.map.mapImage, 0, 0, 69*4, 69*4);
             drawPartyPositionOnMap();
         }
     }
 
     function drawPartyPositionOnMap() {
         canvas.contextHolder.mapDebugContext.fillStyle = '#E200BD';
-        canvas.contextHolder.mapDebugContext.fillRect(gameLoader.map.partyPosition.x*3*4, gameLoader.map.partyPosition.y*3*4, 3*4, 3*4);
+        canvas.contextHolder.mapDebugContext.fillRect(gameState.map.partyPosition.x*3*4, gameState.map.partyPosition.y*3*4, 3*4, 3*4);
     }
 
-    function drawMainWindow() {
+    function draw() {
         let backgroundCeilingColor = '#6fc9f9';
         let backgroundCeilingGradient1Color = '#4fa9e9';
         let backgroundCeilingGradient2Color = '#5063d9';
@@ -52,71 +52,22 @@ define(['canvas', 'gameLoader'], function (Canvas, GameLoader) {
         canvas.contextHolder.context.fillRect(90, 156, 265, 5);
         canvas.contextHolder.context.fillStyle = backgroundFloorColor;
         canvas.contextHolder.context.fillRect(90, 161, 265, 114);
-
         canvas.contextHolder.context.beginPath();
         canvas.contextHolder.context.lineWidth = 1;
-
         canvas.contextHolder.context.strokeStyle = '#00F0E5';
         canvas.contextHolder.context.stroke();
         canvas.contextHolder.context.beginPath();
-        // linke Senkrechten Ebene 2
-        /* context.moveTo(50, 10);
-        context.lineTo(50, 275);
-        context.moveTo(119, 10);
-        context.lineTo(119, 275);
-        context.moveTo(188, 10);
-        context.lineTo(188, 275);
-        // rechte Senkrechten Ebene 2
-        context.moveTo(257, 10);
-        context.lineTo(257, 275);
-        context.moveTo(326, 10);
-        context.lineTo(326, 275);
-        context.moveTo(395, 10);
-        context.lineTo(395, 275);
 
-        context.strokeStyle = '#00BEE5';
-        context.stroke();
-        context.beginPath();*/
-        /*
-        // linke Senkrechte Ebene 1
-        context.moveTo(156, 10);
-        context.lineTo(156, 275);
-        // rechte Senkrechte Ebene 1
-        context.moveTo(288, 10);
-        context.lineTo(288, 275);
-        context.strokeStyle = '#0088E5';
-        context.stroke();*/
         canvas.contextHolder.context.beginPath();
-
         drawRow(4);
         drawRow(3);
         drawRow(2);
         drawRow(1);
         drawRow(0);
-        // drawSingleFrontWall();
         canvas.contextHolder.context.beginPath();
         canvas.contextHolder.context.lineWidth = 1;
-
-        // Diagonalen
-        /*canvas.contextHolder.context.moveTo(90, 33);
-        canvas.contextHolder.context.lineTo(355, 275);
-        canvas.contextHolder.context.moveTo(90, 275);
-        canvas.contextHolder.context.lineTo(355, 33);
-
-        canvas.contextHolder.context.moveTo(90, 132);
-        canvas.contextHolder.context.lineTo(355, 176);
-        canvas.contextHolder.context.moveTo(355, 132);
-        canvas.contextHolder.context.lineTo(90, 176)
-
-        canvas.contextHolder.context.moveTo(90, 117);
-        canvas.contextHolder.context.lineTo(355, 191);
-        canvas.contextHolder.context.moveTo(355, 117);
-        canvas.contextHolder.context.lineTo(90, 191)
-
-        canvas.contextHolder.context.strokeStyle = '#ff0000';
-        canvas.contextHolder.context.stroke();
-        canvas.contextHolder.context.beginPath();*/
     }
+
 
     function drawBlockOnDebugMap(block) {
         canvas.contextHolder.mapDebugContext.strokeStyle = '#FFD800';
@@ -158,9 +109,9 @@ define(['canvas', 'gameLoader'], function (Canvas, GameLoader) {
     }
 
     function getBlockIfInbound(y, x) {
-        if (x >= 0 && x < map.worldMap.blockMap[0].length) {
-            if (y >= 0 && y < map.worldMap.blockMap.length) {
-                return map.worldMap.blockMap[y][x];
+        if (x >= 0 && x < map.regionalMap.blockMap[0].length) {
+            if (y >= 0 && y < map.regionalMap.blockMap.length) {
+                return map.regionalMap.blockMap[y][x];
             }
         }
         return undefined;
@@ -178,20 +129,20 @@ define(['canvas', 'gameLoader'], function (Canvas, GameLoader) {
         let wallTextureFacingRightY;
 
         if (map.partyPosition.direction === 'NORTH') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.southWall.texture);
-            wallTextureFacingRight = gameLoader.getTexture(block.eastWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.southWall.texture);
+            wallTextureFacingRight = gameState.getWallTexture(block.eastWall.texture);
         }
         else if (map.partyPosition.direction === 'EAST') {
-           wallTextureFacingTowards = gameLoader.getTexture(block.westWall.texture);
-           wallTextureFacingRight = gameLoader.getTexture(block.southWall.texture);
+           wallTextureFacingTowards = gameState.getWallTexture(block.westWall.texture);
+           wallTextureFacingRight = gameState.getWallTexture(block.southWall.texture);
         }
         else if (map.partyPosition.direction === 'SOUTH') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.northWall.texture);
-            wallTextureFacingRight = gameLoader.getTexture(block.westWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.northWall.texture);
+            wallTextureFacingRight = gameState.getWallTexture(block.westWall.texture);
         }
         else if (map.partyPosition.direction === 'WEST') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.eastWall.texture);
-            wallTextureFacingRight = gameLoader.getTexture(block.northWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.eastWall.texture);
+            wallTextureFacingRight = gameState.getWallTexture(block.northWall.texture);
         }
         if (wallTextureFacingTowards) {
             if (row == 4) {
@@ -235,20 +186,20 @@ define(['canvas', 'gameLoader'], function (Canvas, GameLoader) {
         let wallTextureFacingRightY;
 
         if (map.partyPosition.direction === 'NORTH') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.southWall.texture);
-            wallTextureFacingRight = gameLoader.getTexture(block.eastWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.southWall.texture);
+            wallTextureFacingRight = gameState.getWallTexture(block.eastWall.texture);
         }
         else if (map.partyPosition.direction === 'EAST') {
-           wallTextureFacingTowards = gameLoader.getTexture(block.westWall.texture);
-           wallTextureFacingRight = gameLoader.getTexture(block.southWall.texture);
+           wallTextureFacingTowards = gameState.getWallTexture(block.westWall.texture);
+           wallTextureFacingRight = gameState.getWallTexture(block.southWall.texture);
         }
         else if (map.partyPosition.direction === 'SOUTH') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.northWall.texture);
-            wallTextureFacingRight = gameLoader.getTexture(block.westWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.northWall.texture);
+            wallTextureFacingRight = gameState.getWallTexture(block.westWall.texture);
         }
         else if (map.partyPosition.direction === 'WEST') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.eastWall.texture);
-            wallTextureFacingRight = gameLoader.getTexture(block.northWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.eastWall.texture);
+            wallTextureFacingRight = gameState.getWallTexture(block.northWall.texture);
         }
         if (wallTextureFacingTowards) {
             if (row == 4) {
@@ -311,20 +262,20 @@ define(['canvas', 'gameLoader'], function (Canvas, GameLoader) {
         let wallTextureFacingRightY;
 
         if (map.partyPosition.direction === 'NORTH') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.southWall.texture);
-            wallTextureFacingRight = gameLoader.getTexture(block.eastWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.southWall.texture);
+            wallTextureFacingRight = gameState.getWallTexture(block.eastWall.texture);
         }
         else if (map.partyPosition.direction === 'EAST') {
-           wallTextureFacingTowards = gameLoader.getTexture(block.westWall.texture);
-           wallTextureFacingRight = gameLoader.getTexture(block.southWall.texture);
+           wallTextureFacingTowards = gameState.getWallTexture(block.westWall.texture);
+           wallTextureFacingRight = gameState.getWallTexture(block.southWall.texture);
         }
         else if (map.partyPosition.direction === 'SOUTH') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.northWall.texture);
-            wallTextureFacingRight = gameLoader.getTexture(block.westWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.northWall.texture);
+            wallTextureFacingRight = gameState.getWallTexture(block.westWall.texture);
         }
         else if (map.partyPosition.direction === 'WEST') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.eastWall.texture);
-            wallTextureFacingRight = gameLoader.getTexture(block.northWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.eastWall.texture);
+            wallTextureFacingRight = gameState.getWallTexture(block.northWall.texture);
         }
         if (wallTextureFacingTowards) {
             if (row == 4) {
@@ -396,16 +347,16 @@ define(['canvas', 'gameLoader'], function (Canvas, GameLoader) {
         let wallTextureFacingTowardsScaleY;
 
         if (map.partyPosition.direction === 'NORTH') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.southWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.southWall.texture);
         }
         else if (map.partyPosition.direction === 'EAST') {
-           wallTextureFacingTowards = gameLoader.getTexture(block.westWall.texture);
+           wallTextureFacingTowards = gameState.getWallTexture(block.westWall.texture);
         }
         else if (map.partyPosition.direction === 'SOUTH') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.northWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.northWall.texture);
         }
         else if (map.partyPosition.direction === 'WEST') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.eastWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.eastWall.texture);
         }
         if (wallTextureFacingTowards) {
             if (row == 4) {
@@ -455,20 +406,20 @@ define(['canvas', 'gameLoader'], function (Canvas, GameLoader) {
         let wallTextureFacingLeftY;
 
         if (map.partyPosition.direction === 'NORTH') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.southWall.texture);
-            wallTextureFacingLeft = gameLoader.getTexture(block.westWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.southWall.texture);
+            wallTextureFacingLeft = gameState.getWallTexture(block.westWall.texture);
         }
         else if (map.partyPosition.direction === 'EAST') {
-           wallTextureFacingTowards = gameLoader.getTexture(block.westWall.texture);
-           wallTextureFacingLeft = gameLoader.getTexture(block.northWall.texture);
+           wallTextureFacingTowards = gameState.getWallTexture(block.westWall.texture);
+           wallTextureFacingLeft = gameState.getWallTexture(block.northWall.texture);
         }
         else if (map.partyPosition.direction === 'SOUTH') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.northWall.texture);
-            wallTextureFacingLeft = gameLoader.getTexture(block.eastWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.northWall.texture);
+            wallTextureFacingLeft = gameState.getWallTexture(block.eastWall.texture);
         }
         else if (map.partyPosition.direction === 'WEST') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.eastWall.texture);
-            wallTextureFacingLeft = gameLoader.getTexture(block.southWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.eastWall.texture);
+            wallTextureFacingLeft = gameState.getWallTexture(block.southWall.texture);
         }
         if (wallTextureFacingTowards) {
             if (row == 4) {
@@ -541,20 +492,20 @@ define(['canvas', 'gameLoader'], function (Canvas, GameLoader) {
         let wallTextureFacingLeftY;
 
         if (map.partyPosition.direction === 'NORTH') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.southWall.texture);
-            wallTextureFacingLeft = gameLoader.getTexture(block.westWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.southWall.texture);
+            wallTextureFacingLeft = gameState.getWallTexture(block.westWall.texture);
         }
         else if (map.partyPosition.direction === 'EAST') {
-           wallTextureFacingTowards = gameLoader.getTexture(block.westWall.texture);
-           wallTextureFacingLeft = gameLoader.getTexture(block.northWall.texture);
+           wallTextureFacingTowards = gameState.getWallTexture(block.westWall.texture);
+           wallTextureFacingLeft = gameState.getWallTexture(block.northWall.texture);
         }
         else if (map.partyPosition.direction === 'SOUTH') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.northWall.texture);
-            wallTextureFacingLeft = gameLoader.getTexture(block.eastWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.northWall.texture);
+            wallTextureFacingLeft = gameState.getWallTexture(block.eastWall.texture);
         }
         else if (map.partyPosition.direction === 'WEST') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.eastWall.texture);
-            wallTextureFacingLeft = gameLoader.getTexture(block.southWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.eastWall.texture);
+            wallTextureFacingLeft = gameState.getWallTexture(block.southWall.texture);
         }
         if (wallTextureFacingTowards) {
             if (row == 4) {
@@ -614,20 +565,20 @@ define(['canvas', 'gameLoader'], function (Canvas, GameLoader) {
         let wallTextureFacingLeftY;
 
         if (map.partyPosition.direction === 'NORTH') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.southWall.texture);
-            wallTextureFacingLeft = gameLoader.getTexture(block.westWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.southWall.texture);
+            wallTextureFacingLeft = gameState.getWallTexture(block.westWall.texture);
         }
         else if (map.partyPosition.direction === 'EAST') {
-           wallTextureFacingTowards = gameLoader.getTexture(block.westWall.texture);
-           wallTextureFacingLeft = gameLoader.getTexture(block.northWall.texture);
+           wallTextureFacingTowards = gameState.getWallTexture(block.westWall.texture);
+           wallTextureFacingLeft = gameState.getWallTexture(block.northWall.texture);
         }
         else if (map.partyPosition.direction === 'SOUTH') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.northWall.texture);
-            wallTextureFacingLeft = gameLoader.getTexture(block.eastWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.northWall.texture);
+            wallTextureFacingLeft = gameState.getWallTexture(block.eastWall.texture);
         }
         else if (map.partyPosition.direction === 'WEST') {
-            wallTextureFacingTowards = gameLoader.getTexture(block.eastWall.texture);
-            wallTextureFacingLeft = gameLoader.getTexture(block.southWall.texture);
+            wallTextureFacingTowards = gameState.getWallTexture(block.eastWall.texture);
+            wallTextureFacingLeft = gameState.getWallTexture(block.southWall.texture);
         }
         if (wallTextureFacingTowards) {
             if (row == 4) {

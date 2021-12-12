@@ -1,15 +1,15 @@
 require.config({
 });
 
-require(['canvas', 'gameLoader', 'worldDrawingEngine', 'runeTable', 'partyBar', 'textWindow', 'sideBoard', 'audio', 'menu', 'controls'],
-    function (Canvas, GameLoader, WorldDrawingEngine, RuneTable, PartyBar, TextWindow, SideBoard, Audio, Menu, Controls) {
+require(['canvas', 'gameState', 'mainWindow', 'runeTable', 'partyBar', 'textWindow', 'dashBoard', 'audio', 'menu', 'controls'],
+    function (Canvas, GameState, MainWindow, RuneTable, PartyBar, TextWindow, SideBoard, Audio, Menu, Controls) {
         let canvas = new Canvas();
-        let gameLoader = new GameLoader();
-        let worldDrawingEngine = new WorldDrawingEngine();
+        let gameState = new GameState();
+        let mainWindow = new MainWindow();
         let runeTable = new RuneTable();
         let partyBar = new PartyBar();
         let textWindow = new TextWindow();
-        let sideBoard = new SideBoard();
+        let dashBoard = new SideBoard();
         let audio = new Audio();
         let menu = new Menu();
         let controls = new Controls();
@@ -21,17 +21,23 @@ require(['canvas', 'gameLoader', 'worldDrawingEngine', 'runeTable', 'partyBar', 
             menu.init();
             canvas.initCanvas();
             canvas.initMapDebugCanvas();
-            gameLoader.loadGameState();
+            gameState.loadGameState();
             setInterval(function() {draw();}, 100);
             setTimeout(function() {controls.unlock();}, 1000);
         }
 
         function draw() {
-            sideBoard.draw();
+            dashBoard.draw();
             runeTable.draw();
             partyBar.draw();
             textWindow.draw();
-            worldDrawingEngine.draw();
+            if (gameState.withinRoom()) {
+                mainWindow.drawRoom(gameState.getBlock());
+            }
+            else if (gameState.onRegionalMap()) {
+                mainWindow.drawRegionalMap(gameState.getBlock());
+            }
+
             //console.log('Drawed at ' + Date.now());
         }
 

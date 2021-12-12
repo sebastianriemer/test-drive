@@ -21,6 +21,15 @@ public class Wall {
         if (texture.equals("ffffff")) {
             return false;
         }
+        if (texture.equals("e230e7")) {
+            return false;
+        }
+        if (texture.equals("ed1c24")) {
+            return false;
+        }
+        if (texture.equals("f33e62")) {
+            return false;
+        }
         if (texture.equals("000000")) {
             return false;
         }

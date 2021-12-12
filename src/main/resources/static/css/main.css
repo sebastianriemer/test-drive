@@ -1,3 +1,8 @@
 .hello-title{
     color: darkgreen;
 }
+
+@font-face {
+    font-family: metalMania;
+    src:url("/fonts/MetalMania-Regular.ttf");
+}

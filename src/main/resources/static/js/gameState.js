@@ -2,31 +2,66 @@ define(['audio'], function (Audio) {
     let audio = new Audio();
     let map = {};
     let partyMembers = [];
-    let textureMap = {textureCount : 0};
+    let wallMap = {textureCount : 0};
+    let roomMap = {textureCount : 0};
 
     let returnedModule = function() {
-
-        this.name = 'GameLoader';
+        this.name = 'GameState';
         this.map = map;
         this.partyMembers = partyMembers;
-        this.textureMap = textureMap;
+        this.wallMap = wallMap;
+        this.roomMap = roomMap;
 
-        this.getTexture = function(texture) {
-            if (texture === 'ffffff') {
+        this.getWallTexture = function(texture) {
+            if (texture === 'ffffff' || texture === 'bcbcbc') {
                 return undefined;
             }
-            if (textureMap[texture]) {
-                return textureMap[texture];
+            if (wallMap[texture]) {
+                return wallMap[texture];
             }
-            return textureMap['000000'];
+            return wallMap['000000'];
+        }
+        this.getRoomTexture = function(texture) {
+            if (roomMap[texture]) {
+                return roomMap[texture];
+            }
+            return undefined;
+        }
+
+        this.withinRoom = function() {
+            if (map && map.regionalMap && map.regionalMap.blockMap) {
+                let roomBlock = map.regionalMap.blockMap[map.partyPosition.y][map.partyPosition.x];
+                return (this.getRoomTexture(roomBlock.center));
+            }
+            return undefined;
+        }
+
+        this.getBlock = function() {
+            return map.regionalMap.blockMap[map.partyPosition.y][map.partyPosition.x];
+        }
+
+        this.onRegionalMap = function() {
+            if (map && map.regionalMap && map.regionalMap.blockMap) {
+                let roomBlock = map.regionalMap.blockMap[map.partyPosition.y][map.partyPosition.x];
+                return (!this.getRoomTexture(roomBlock.center));
+            }
+            return undefined;
+        }
+        this.onGlobalMap = function() {
+            return map.regionalMap === undefined;
+        }
+
+        this.leaveRoom = function() {
+            invertDirection(map.partyPosition.direction);
+            this.moveForward();
         }
 
         this.loaded = function() {
             if (map !== undefined
-                && map.worldMap !== undefined
+                && map.regionalMap !== undefined
                 && partyMembers !== undefined
-                && textureMap !== undefined
-                && textureMap.textureCount > 0
+                && wallMap !== undefined
+                && wallMap.textureCount > 0
                 ) {
                     return true;
             }
@@ -37,34 +72,35 @@ define(['audio'], function (Audio) {
             fetch('/ajax/gameState/sebus')
                 .then(response => response.json())
                 .then(data => {
-                    initWorldMap(data.worldMap, data.party.partyPosition);
+                    initRegionalMap(data.regionalMap, data.party.partyPosition);
                     initParty(data.party);
-                    initTextureMap(data.textureMap);
+                    initWallMap(data.wallMap);
+                    initRoomMap(data.roomMap);
 
                 });
         }
 
         this.moveForward = function() {
             if (this.map.partyPosition.direction == 'NORTH') {
-                if (!map.worldMap.blockMap[this.map.partyPosition.y-1][this.map.partyPosition.x].southWall.solid) {
+                if (!map.regionalMap.blockMap[this.map.partyPosition.y-1][this.map.partyPosition.x].southWall.solid) {
                     this.map.partyPosition.y -= 1;
                 } else {
                     audio.playSound("ungh");
                 }
             } else if (this.map.partyPosition.direction == 'EAST') {
-            if (!map.worldMap.blockMap[this.map.partyPosition.y][this.map.partyPosition.x+1].westWall.solid) {
+            if (!map.regionalMap.blockMap[this.map.partyPosition.y][this.map.partyPosition.x+1].westWall.solid) {
                     this.map.partyPosition.x += 1;
                 } else {
                     audio.playSound("ungh");
                 }
             } else if (this.map.partyPosition.direction == 'SOUTH') {
-                if (!map.worldMap.blockMap[this.map.partyPosition.y+1][this.map.partyPosition.x].northWall.solid) {
+                if (!map.regionalMap.blockMap[this.map.partyPosition.y+1][this.map.partyPosition.x].northWall.solid) {
                     this.map.partyPosition.y += 1;
                 } else {
                     audio.playSound("ungh");
                 }
             } else if (this.map.partyPosition.direction == 'WEST') {
-                if (!map.worldMap.blockMap[this.map.partyPosition.y][this.map.partyPosition.x-1].eastWall.solid) {
+                if (!map.regionalMap.blockMap[this.map.partyPosition.y][this.map.partyPosition.x-1].eastWall.solid) {
                     this.map.partyPosition.x -= 1;
                 } else {
                     audio.playSound("ungh");
@@ -74,31 +110,30 @@ define(['audio'], function (Audio) {
 
         this.moveBackward = function() {
             if (this.map.partyPosition.direction == 'NORTH') {
-                if (!map.worldMap.blockMap[this.map.partyPosition.y+1][this.map.partyPosition.x].northWall.solid) {
+                if (!map.regionalMap.blockMap[this.map.partyPosition.y+1][this.map.partyPosition.x].northWall.solid) {
                     this.map.partyPosition.y += 1;
                 } else {
                     audio.playSound("ungh");
                 }
             }
             else if (this.map.partyPosition.direction == 'EAST') {
-                if (!map.worldMap.blockMap[this.map.partyPosition.y][this.map.partyPosition.x-1].eastWall.solid) {
+                if (!map.regionalMap.blockMap[this.map.partyPosition.y][this.map.partyPosition.x-1].eastWall.solid) {
                     this.map.partyPosition.x -= 1;
                 } else {
                     audio.playSound("ungh");
                 }
             } else if (this.map.partyPosition.direction == 'SOUTH') {
-                if (!map.worldMap.blockMap[this.map.partyPosition.y-1][this.map.partyPosition.x].southWall.solid) {
+                if (!map.regionalMap.blockMap[this.map.partyPosition.y-1][this.map.partyPosition.x].southWall.solid) {
                     this.map.partyPosition.y -= 1;
                 } else {
                     audio.playSound("ungh");
                 }
             } else if (this.map.partyPosition.direction == 'WEST') {
-                if (!map.worldMap.blockMap[this.map.partyPosition.y][this.map.partyPosition.x+1].westWall.solid) {
+                if (!map.regionalMap.blockMap[this.map.partyPosition.y][this.map.partyPosition.x+1].westWall.solid) {
                     this.map.partyPosition.x += 1;
                  } else {
                     audio.playSound("ungh");
                 }
-
             }
         }
 
@@ -127,11 +162,23 @@ define(['audio'], function (Audio) {
         }
     }
 
-    function initWorldMap(worldMap, partyPosition) {
-        map.worldMap = worldMap;
+    function invertDirection() {
+        if (map.partyPosition.direction == 'NORTH') {
+            map.partyPosition.direction = 'SOUTH';
+        } else if (map.partyPosition.direction == 'EAST') {
+            map.partyPosition.direction = 'WEST';
+        } else if (map.partyPosition.direction == 'SOUTH') {
+            map.partyPosition.direction = 'NORTH';
+        } else if (map.partyPosition.direction == 'WEST') {
+            map.partyPosition.direction = 'EAST';
+        }
+    }
+
+    function initRegionalMap(regionalMap, partyPosition) {
+        map.regionalMap = regionalMap;
         map.partyPosition = partyPosition;
         let mapImage = new Image();
-        mapImage.src = worldMap.resourceFilename;
+        mapImage.src = regionalMap.resourceFilename;
         mapImage.onload = function() {
             map.mapImage = mapImage
         }
@@ -149,16 +196,30 @@ define(['audio'], function (Audio) {
         }
     }
 
-    function initTextureMap(map) {
-        let textureMapKeys = Object.keys(map);
-        for (let i = 0; i < textureMapKeys.length; i++) {
-            let textureValue = map[textureMapKeys[i]];
-          console.log(textureMapKeys[i] + ' = ' + textureValue);
+    function initWallMap(map) {
+        let mapKeys = Object.keys(map);
+        for (let i = 0; i < mapKeys.length; i++) {
+            let textureValue = map[mapKeys[i]];
+          console.log(mapKeys[i] + ' = ' + textureValue);
           let textureImage = new Image();
           textureImage.src = textureValue;
           textureImage.onload = function() {
-              textureMap[textureMapKeys[i]] = textureImage;
-              textureMap.textureCount += 1;
+              wallMap[mapKeys[i]] = textureImage;
+              wallMap.textureCount += 1;
+          }
+        }
+    }
+
+    function initRoomMap(map) {
+        let mapKeys = Object.keys(map);
+        for (let i = 0; i < mapKeys.length; i++) {
+            let textureValue = map[mapKeys[i]];
+          console.log(mapKeys[i] + ' = ' + textureValue);
+          let textureImage = new Image();
+          textureImage.src = textureValue;
+          textureImage.onload = function() {
+              roomMap[mapKeys[i]] = textureImage;
+              roomMap.textureCount += 1;
           }
         }
     }

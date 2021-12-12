@@ -1,29 +1,39 @@
 package at.riemer.sebastian.TestDrive.model;
 
-import at.riemer.sebastian.TestDrive.model.map.WorldMap;
+import at.riemer.sebastian.TestDrive.model.map.RegionalMap;
 
 import java.util.Map;
 
 public class GameState {
-    private WorldMap worldMap;
+    private RegionalMap regionalMap;
     private Party party;
-    private Map<String, String> textureMap;
+    private Map<String, String> wallMap;
+    private Map<String, String> roomMap;
 
-    public GameState(WorldMap worldMap, Party party, Map<String, String> textureMap) {
-        this.worldMap = worldMap;
+    public GameState(RegionalMap regionalMap,
+                     Party party,
+                     Map<String, String> wallMap,
+                     Map<String, String> roomMap
+    ) {
+        this.regionalMap = regionalMap;
         this.party = party;
-        this.textureMap = textureMap;
+        this.wallMap = wallMap;
+        this.roomMap = roomMap;
     }
 
-    public WorldMap getWorldMap() {
-        return worldMap;
+    public RegionalMap getRegionalMap() {
+        return regionalMap;
     }
 
     public Party getParty() {
         return party;
     }
 
-    public Map<String, String> getTextureMap() {
-        return textureMap;
+    public Map<String, String> getWallMap() {
+        return wallMap;
+    }
+
+    public Map<String, String> getRoomMap() {
+        return roomMap;
     }
 }

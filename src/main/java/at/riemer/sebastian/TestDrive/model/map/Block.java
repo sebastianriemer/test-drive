@@ -8,8 +8,7 @@ public class Block {
     private final Wall southWall;
     private final Wall westWall;
     private final String center;
-
-
+    private final String streetName;
 
     public Block(int x,
                  int y,
@@ -17,7 +16,8 @@ public class Block {
                  String eastWall,
                  String southWall,
                  String westWall,
-                 String center
+                 String center,
+                 String streetName
     ) {
         this.x = x;
         this.y = y;
@@ -26,6 +26,7 @@ public class Block {
         this.southWall = new Wall(southWall);
         this.westWall = new Wall(westWall);
         this.center = center;
+        this.streetName = streetName;
 
     }
 
@@ -63,5 +64,9 @@ public class Block {
 
     public String getCenter() {
         return center;
+    }
+
+    public String getStreetName() {
+        return streetName;
     }
 }

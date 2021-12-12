@@ -1,5 +1,5 @@
-define(['gameLoader'], function (GameLoader) {
-    let gameLoader = new GameLoader();
+define(['gameState'], function (GameState) {
+    let gameState = new GameState();
     let locked = true;
 
     document.onkeydown = checkKey;
@@ -9,19 +9,45 @@ define(['gameLoader'], function (GameLoader) {
         if (!locked) {
             if (e.keyCode == '38') {
                 console.log('up');
-                gameLoader.moveForward();
+                if (gameState.withinRoom()) {
+                    gameState.leaveRoom();
+                } else if (gameState.onRegionalMap()) {
+                    console.log('up');
+                    gameState.moveForward();
+                } else if (gameState.onGlobalMap()) {
+
+                }
             }
             else if (e.keyCode == '40') {
-                console.log('down');
-                gameLoader.moveBackward();
+                if (gameState.withinRoom()) {
+                    gameState.leaveRoom();
+                } else if (gameState.onRegionalMap()) {
+                    console.log('down');
+                    gameState.moveBackward();
+                } else if (gameState.onGlobalMap()) {
+
+                }
             }
             else if (e.keyCode == '37') {
-               console.log('left');
-               gameLoader.turnLeft();
+                if (gameState.withinRoom()) {
+                    gameState.leaveRoom();
+                } else if (gameState.onRegionalMap()) {
+                   console.log('left');
+                   gameState.turnLeft();
+                } else if (gameState.onGlobalMap()) {
+
+                }
+
             }
             else if (e.keyCode == '39') {
-               console.log('right');
-               gameLoader.turnRight();
+                if (gameState.withinRoom()) {
+                    gameState.leaveRoom();
+                } else if (gameState.onRegionalMap()) {
+                    console.log('right');
+                    gameState.turnRight();
+                } else if (gameState.onGlobalMap()) {
+
+                }
             }
         } else {
             console.log('Controls currently locked');
