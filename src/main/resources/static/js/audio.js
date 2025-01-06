@@ -6,12 +6,13 @@ define([], function () {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             const backgroundMusic1 = document.querySelector('#backgroundMusic1');
             const sampleAh = document.querySelector('#sampleAh');
+            const sampleBattleStart = document.querySelector('#battleStart');
             const playButton = document.getElementById('playAudio');
             playButton.addEventListener('click', function() {
                 toggleAudio(this, backgroundMusic1);
             }, false);
         }
-        this.playSound = function(sampleNameNotYetUseable) {
+        this.playAh = function(sampleNameNotYetUseable) {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             let track;
             if (!audioContext) {
@@ -32,6 +33,16 @@ define([], function () {
            /* audioElement.addEventListener('ended', () => {
              playButton.dataset.playing = 'false';
             }, false);*/
+        }
+         this.playBattleStart = function(sampleNameNotYetUseable) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            let track;
+            if (!audioContext) {
+             audioContext = new AudioContext();
+             track = audioContext.createMediaElementSource(sampleBattleStart);
+             track.connect(audioContext.destination);
+            }
+            sampleBattleStart.play();
         }
     };
 
@@ -58,9 +69,5 @@ define([], function () {
         }, false);
     }
 
-
-
     return returnedModule;
-
-}
-);
+});

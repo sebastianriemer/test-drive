@@ -1,8 +1,7 @@
 define(['canvas', 'gameState'], function (Canvas, GameState) {
     let canvas = new Canvas();
     let gameState = new GameState();
-    let map = gameState.map;
-    let textureMap = gameState.textureMap;
+    let map = gameState.regionalMap;
     const mainWindowOffsetX = 90;
     const mainWindowOffsetY = 10;
 
@@ -18,15 +17,15 @@ define(['canvas', 'gameState'], function (Canvas, GameState) {
     }
 
     function drawDebugMap() {
-        if (gameState.map.mapImage) {
-            canvas.contextHolder.mapDebugContext.drawImage(gameState.map.mapImage, 0, 0, 69*4, 69*4);
+        if (map.mapImage) {
+            canvas.contextHolder.mapDebugContext.drawImage(map.mapImage, 0, 0, 69*4, 69*4);
             drawPartyPositionOnMap();
         }
     }
 
     function drawPartyPositionOnMap() {
         canvas.contextHolder.mapDebugContext.fillStyle = '#E200BD';
-        canvas.contextHolder.mapDebugContext.fillRect(gameState.map.partyPosition.x*3*4, gameState.map.partyPosition.y*3*4, 3*4, 3*4);
+        canvas.contextHolder.mapDebugContext.fillRect(map.partyPosition.x*3*4, map.partyPosition.y*3*4, 3*4, 3*4);
     }
 
     function draw() {
@@ -109,9 +108,9 @@ define(['canvas', 'gameState'], function (Canvas, GameState) {
     }
 
     function getBlockIfInbound(y, x) {
-        if (x >= 0 && x < map.regionalMap.blockMap[0].length) {
-            if (y >= 0 && y < map.regionalMap.blockMap.length) {
-                return map.regionalMap.blockMap[y][x];
+        if (x >= 0 && x < map.mapData.blockMap[0].length) {
+            if (y >= 0 && y < map.mapData.blockMap.length) {
+                return map.mapData.blockMap[y][x];
             }
         }
         return undefined;

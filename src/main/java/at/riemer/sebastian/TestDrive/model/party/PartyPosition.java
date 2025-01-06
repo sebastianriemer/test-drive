@@ -1,4 +1,6 @@
-package at.riemer.sebastian.TestDrive.model;
+package at.riemer.sebastian.TestDrive.model.party;
+
+import at.riemer.sebastian.TestDrive.model.Direction;
 
 public class PartyPosition {
     private int x;
