@@ -1,7 +1,6 @@
-define(['canvas'], function (Canvas) {
-    let canvas = new Canvas();
+define(['canvas'], function (canvas) {
 
-    let returnedModule = function() {
+    let textWindow = function() {
         this.draw = function() {
             drawEmpty();
        }
@@ -12,8 +11,10 @@ define(['canvas'], function (Canvas) {
        canvas.contextHolder.context.fillStyle = textWindowColor;
        canvas.contextHolder.context.fillRect(365, 10, 265, 285);
     }
-
-    return returnedModule;
+    if (!textWindow.instance) {
+        textWindow.instance = new textWindow();
+    }
+    return textWindow.instance;
 
 }
 );

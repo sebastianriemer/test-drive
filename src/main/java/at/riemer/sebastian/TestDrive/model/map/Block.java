@@ -9,6 +9,7 @@ public class Block {
     private final Wall westWall;
     private final String center;
     private final String streetName;
+    private final boolean hasNoWalls;
 
     public Block(int x,
                  int y,
@@ -27,15 +28,17 @@ public class Block {
         this.westWall = new Wall(westWall);
         this.center = center;
         this.streetName = streetName;
+        this.hasNoWalls = surroundedByWhiteWalls();
+
 
     }
 
-    public boolean isEmpty() {
+    public boolean surroundedByWhiteWalls() {
         return
-            northWall.equals("ffffff") &&
-            eastWall.equals("ffffff") &&
-            southWall.equals("ffffff") &&
-            westWall.equals("ffffff");
+            northWall.getTexture().equals("ffffff") &&
+            eastWall.getTexture().equals("ffffff") &&
+            southWall.getTexture().equals("ffffff") &&
+            westWall.getTexture().equals("ffffff");
     }
 
     public int getX() {
@@ -69,4 +72,13 @@ public class Block {
     public String getStreetName() {
         return streetName;
     }
+
+    public boolean isHasNoWalls() {
+        return hasNoWalls;
+    }
+
+    public boolean isHasWalls() {
+        return !hasNoWalls;
+    }
+
 }

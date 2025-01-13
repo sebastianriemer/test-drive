@@ -1,6 +1,6 @@
 define([], function () {
 
-    let returnedModule = function() {
+    let menu = function() {
        this.init = function() {
            document.getElementById("startFullScreen").onclick = function() {
                document.getElementById("canvas").requestFullscreen();
@@ -8,7 +8,11 @@ define([], function () {
        }
     };
 
-    return returnedModule;
+
+    if (!menu.instance) {
+        menu.instance = new menu();
+    }
+    return menu.instance;
 
 }
 );

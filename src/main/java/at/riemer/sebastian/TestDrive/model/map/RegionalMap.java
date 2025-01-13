@@ -16,39 +16,37 @@ public class RegionalMap {
     private String mapFilename;
     private Map<String, Texture> wallTextureMap = new HashMap<>();
     private Map<String, Texture> roomTextureMap = new HashMap<>();
-    private Map<String, Texture> battleTextureMap = new HashMap<>();
 
-    public RegionalMap(BufferedImage mapAsImage,
-                       String mapFilename,
+    public RegionalMap(String mapFilename,
+                       BufferedImage textureMapAsImage,
+                       BufferedImage streetMapAsImage,
                        Resource[] wallResources,
-                       Resource[] roomResources,
-                       Resource[] battleResources
-                       ) {
+                       Resource[] roomResources
+    ) {
         this.mapFilename = mapFilename;
-        initBlockMap(mapAsImage);
+        initBlockMap(textureMapAsImage, streetMapAsImage);
         initWallTextureMap(wallResources);
         initRoomTextureMap(roomResources);
-        initBattleTextureMap(battleResources);
 
     }
 
-    private void initBlockMap(BufferedImage mapAsImage) {
+    private void initBlockMap(BufferedImage textureMapAsImage, BufferedImage streetMapAsImage) {
         StreetNameLookupService streetNameLookupService = new StreetNameLookupService();
 
-        for (int y = 0; y < mapAsImage.getHeight() / 3; y ++) {
+        for (int y = 0; y < textureMapAsImage.getHeight() / 3; y++) {
             List<Block> row = new ArrayList<>();
             blockMap.add(row);
-            for (int x = 0; x < mapAsImage.getWidth() / 3; x ++) {
-                String centerHex = getImagePixelAsHexString(mapAsImage, x*3 + 1, y*3 + 1);
-
+            for (int x = 0; x < textureMapAsImage.getWidth() / 3; x++) {
+                String centerHex = getImagePixelAsHexString(textureMapAsImage, x * 3 + 1, y * 3 + 1);
+                String centerHexOnStreetMap = getImagePixelAsHexString(streetMapAsImage, x * 3 + 1, y * 3 + 1);
                 Block block = new Block(x,
                         y,
-                        getImagePixelAsHexString(mapAsImage, x*3 + 1, y*3),
-                        getImagePixelAsHexString(mapAsImage, x*3 + 2, y*3 + 1),
-                        getImagePixelAsHexString(mapAsImage, x*3 + 1, y*3 + 2),
-                        getImagePixelAsHexString(mapAsImage, x*3, y*3 + 1),
+                        getImagePixelAsHexString(textureMapAsImage, x * 3 + 1, y * 3),
+                        getImagePixelAsHexString(textureMapAsImage, x * 3 + 2, y * 3 + 1),
+                        getImagePixelAsHexString(textureMapAsImage, x * 3 + 1, y * 3 + 2),
+                        getImagePixelAsHexString(textureMapAsImage, x * 3, y * 3 + 1),
                         centerHex,
-                        streetNameLookupService.getStreetName(centerHex)
+                        streetNameLookupService.getStreetName(centerHexOnStreetMap)
                 );
                 row.add(block);
             }
@@ -69,14 +67,6 @@ public class RegionalMap {
             this.roomTextureMap.put(
                     FilenameUtils.removeExtension(roomResources[i].getFilename()),
                     new Texture("img/rooms/" + roomResources[i].getFilename())
-            );
-        }
-    }
-    private void initBattleTextureMap(Resource[] battleResources) {
-        for (int i = 0; i < battleResources.length; i++) {
-            this.battleTextureMap.put(
-                    FilenameUtils.removeExtension(battleResources[i].getFilename()),
-                    new Texture("img/battle/" + battleResources[i].getFilename())
             );
         }
     }
@@ -115,7 +105,4 @@ public class RegionalMap {
         return roomTextureMap;
     }
 
-    public Map<String, Texture> getBattleTextureMap() {
-        return battleTextureMap;
-    }
 }

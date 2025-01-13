@@ -6,6 +6,9 @@
         <link href="/css/main.css" rel="stylesheet">
     </head>
     <body>
+        <div id="blackScreen">
+            <p>Zum Starten beliebige Taste drücken...</p>
+        </div>
         <h2 class="hello-title" th:text="'Test D R I V E, v' + ${version}"></h2>
 
         <div style="display: flex;">
@@ -27,12 +30,19 @@
                     Your browser does not support the HTML5 canvas tag.
                 </canvas>
             </div>
+            <div>
+                <canvas id="mapDebugCanvas2"
+                        width="276"
+                        height="276"
+                        style="border:1px solid lightgrey;"
+                >
+                    Your browser does not support the HTML5 canvas tag.
+                </canvas>
+            </div>
         </div>
 
         <div th:text="'It is, ' + ${nowDateTime} + '!'"></div>
-        <audio id="backgroundMusic1" src="/audio/testDrive.ogg" crossorigin="anonymous" ></audio>
-        <audio id="sampleAh" src="audio/ah.ogg" crossorigin="anonymous" ></audio>
-        <audio id="sampleBattleStart" src="audio/battleStart.mp3" crossorigin="anonymous" ></audio>
+
         <button id="startFullScreen">Go FullScreen</button>
         <button id="playAudio">Music on</button>
         <script data-main="/js/main" src="/js/require.js"></script>

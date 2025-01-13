@@ -1,29 +1,34 @@
-define(['canvas', 'gameState', 'regionalMapDrawingEngine'], function (Canvas, GameState, RegionalMapDrawingEngine) {
-    let canvas = new Canvas();
-    let gameState = new GameState();
-    let regionalMapDrawingEngine = new RegionalMapDrawingEngine();
+define(['canvas', 'gameState', 'regionalWorldDrawingEngine'], function (canvas, gameState, regionalWorldDrawingEngine) {
+    //let canvas = new Canvas();
+    //let gameState = new GameState();
+    //let regionalWorldDrawingEngine = new RegionalWorldDrawingEngine();
 
-    let returnedModule = function() {
+    let mainWindow = function() {
         this.drawRegionalMap = function(block) {
-            regionalMapDrawingEngine.draw();
+            regionalWorldDrawingEngine.draw();
             printStreetName(block);
+            drawDebugMap();
+            drawDebugBattleMap();
         }
 
         this.drawRoom = function(roomBlock) {
            let roomTexture = gameState.getRoomTexture(roomBlock.center);
            drawRoom(roomTexture, 130, 15, 0.67, 0.66);
-           printStreetName(block);
+           printStreetName(roomBlock);
         }
         this.drawBattle = function(roomBlock) {
           let battleTexture = gameState.getBattleTexture(roomBlock.center);
           drawBattle(battleTexture, 130, 15, 0.67, 0.66);
-          printBattleText(roomBlock);
+          printBattleText();
         }
         this.drawDialog = function() {
         }
     };
 
-    return returnedModule;
+    if (!mainWindow.instance) {
+        mainWindow.instance = new mainWindow();
+    }
+    return mainWindow.instance;
 
     function drawRoom(texture, x, y, scaleX, scaleY, offsetX, widthX) {
         if (offsetX == undefined) {
@@ -36,6 +41,8 @@ define(['canvas', 'gameState', 'regionalMapDrawingEngine'], function (Canvas, Ga
         canvas.contextHolder.context.scale(scaleX, scaleY);
         canvas.contextHolder.context.drawImage(texture, offsetX, 0, widthX, texture.height, x, y, widthX, texture.height);
         canvas.contextHolder.context.resetTransform();
+        drawDebugMap();
+        drawDebugBattleMap();
     }
 
     function drawBattle(texture, x, y, scaleX, scaleY, offsetX, widthX) {
@@ -49,23 +56,36 @@ define(['canvas', 'gameState', 'regionalMapDrawingEngine'], function (Canvas, Ga
         canvas.contextHolder.context.scale(scaleX, scaleY);
         canvas.contextHolder.context.drawImage(texture, offsetX, 0, widthX, texture.height, x, y, widthX, texture.height);
         canvas.contextHolder.context.resetTransform();
+        drawDebugMap();
+        drawDebugBattleMap();
+    }
+
+    function drawDebugMap() {
+        if (gameState.regionalMap.mapImage) {
+            canvas.contextHolder.mapDebugContext.drawImage(gameState.regionalMap.mapImage, 0, 0, 69*4, 69*4);
+            drawPartyPositionOnMap(canvas.contextHolder.mapDebugContext);
+        }
+    }
+    function drawDebugBattleMap() {
+        if (gameState.battleMap.mapImage) {
+            canvas.contextHolder.mapDebugContext2.drawImage(gameState.battleMap.mapImage, 0, 0, 69*4, 69*4);
+            drawPartyPositionOnMap(canvas.contextHolder.mapDebugContext2);
+        }
+    }
+
+    function drawPartyPositionOnMap(mapDebugContext) {
+        mapDebugContext.fillStyle = '#E200BD';
+        mapDebugContext.fillRect(gameState.regionalMap.partyPosition.x*3*4, gameState.regionalMap.partyPosition.y*3*4, 3*4, 3*4);
     }
 
     function printStreetName(block) {
-        canvas.contextHolder.context.resetTransform();
-        canvas.contextHolder.context.font = "25px metalMania";
-        canvas.contextHolder.context.textAlign = "center";
-
-        canvas.contextHolder.context.fillStyle = '#ffd800';
-        canvas.contextHolder.context.strokeStyle = '#000000';
-
-        canvas.contextHolder.context.fillText(block.streetName, 220, 297);
-        canvas.contextHolder.context.strokeText(block.streetName, 220, 297);
-
-        canvas.contextHolder.context.fill();
-        canvas.contextHolder.context.stroke();
+        printTextBelowMainWindow(block.streetName);
     }
-    function printBattleText(block) {
+    function printBattleText() {
+        printTextBelowMainWindow('Kampf')
+    }
+
+    function printTextBelowMainWindow(text) {
         canvas.contextHolder.context.resetTransform();
         canvas.contextHolder.context.font = "25px metalMania";
         canvas.contextHolder.context.textAlign = "center";
@@ -73,8 +93,8 @@ define(['canvas', 'gameState', 'regionalMapDrawingEngine'], function (Canvas, Ga
         canvas.contextHolder.context.fillStyle = '#ffd800';
         canvas.contextHolder.context.strokeStyle = '#000000';
 
-        canvas.contextHolder.context.fillText('Kampf!', 220, 297);
-        canvas.contextHolder.context.strokeText('Kampf!', 220, 297);
+        canvas.contextHolder.context.fillText(text, 220, 297);
+        canvas.contextHolder.context.strokeText(text, 220, 297);
 
         canvas.contextHolder.context.fill();
         canvas.contextHolder.context.stroke();

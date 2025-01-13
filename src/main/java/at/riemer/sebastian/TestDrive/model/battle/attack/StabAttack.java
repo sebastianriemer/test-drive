@@ -13,7 +13,7 @@ public class StabAttack implements Attack {
 
     @Override
     public String getAttackDescription(String enemyName) {
-        return "sticht auf " + enemyName;
+        return " sticht auf " + enemyName;
     }
 
     @Override

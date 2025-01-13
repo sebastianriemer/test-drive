@@ -11,7 +11,7 @@ public class BiteAttack implements Attack {
 
     @Override
     public String getAttackDescription(String enemyName) {
-        return "beisst" + enemyName;
+        return " beisst " + enemyName;
     }
 
     @Override

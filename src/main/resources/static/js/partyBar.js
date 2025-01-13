@@ -1,11 +1,11 @@
-define(['canvas', 'gameState', 'dashBoard'], function (Canvas, GameState, DashBoard) {
-    let canvas = new Canvas();
-    let gameState = new GameState();
-    let dashBoard = new DashBoard();
+define(['canvas', 'gameState', 'dashBoard'], function (canvas, gameState, dashBoard) {
+    //let canvas = new Canvas();
+    //let gameState = new GameState();
+    //let dashBoard = new DashBoard();
     let xOffset = 100;
     let yOffset = 370;
 
-    let returnedModule = function() {
+    let partyBar = function() {
         this.draw = function() {
             for (let i = 0; i < gameState.partyMembers.length; i++) {
                 drawPortrait(i, gameState.partyMembers[i].portraitImage);
@@ -22,7 +22,10 @@ define(['canvas', 'gameState', 'dashBoard'], function (Canvas, GameState, DashBo
         }
     };
 
-    return returnedModule;
+   if (!partyBar.instance) {
+        partyBar.instance = new partyBar();
+    }
+    return partyBar.instance;
 
     function drawPortrait(partyMemberPosition, portraitImage) {
         canvas.contextHolder.context.drawImage(portraitImage, 10+partyMemberPosition*xOffset, yOffset);

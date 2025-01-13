@@ -12,7 +12,7 @@ public class MinorMeteoriteAttack implements Attack {
 
     @Override
     public String getAttackDescription(String enemyNames) {
-        return "feuert Mikro-Meteoriten auf " + enemyNames;
+        return " feuert Mikro-Meteoriten auf " + enemyNames;
     }
 
     @Override

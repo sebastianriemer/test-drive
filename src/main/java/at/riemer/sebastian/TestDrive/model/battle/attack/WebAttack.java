@@ -11,7 +11,7 @@ public class WebAttack implements Attack {
 
     @Override
     public String getAttackDescription(String enemyName) {
-        return "wickelt " + enemyName + " in ein Netz ein.";
+        return " wickelt " + enemyName + " in ein Netz ein.";
     }
 
     @Override

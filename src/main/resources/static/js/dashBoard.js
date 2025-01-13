@@ -1,8 +1,8 @@
-define(['canvas'], function (Canvas) {
-    let canvas = new Canvas();
+define(['canvas'], function (canvas) {
+    console.log('dashBoard: begin');
     let resources = {};
 
-    let returnedModule = function() {
+    let dashBoard = function() {
         this.name = 'DashBoard';
         this.resources = resources;
         this.load = function() {
@@ -59,7 +59,10 @@ define(['canvas'], function (Canvas) {
 
     }
 
-    return returnedModule;
+   if (!dashBoard.instance) {
+        dashBoard.instance = new dashBoard();
+    }
+    return dashBoard.instance;
 
 }
 );

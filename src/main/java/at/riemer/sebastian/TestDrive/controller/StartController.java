@@ -6,14 +6,15 @@ import at.riemer.sebastian.TestDrive.model.battle.MonsterGenerator;
 import at.riemer.sebastian.TestDrive.model.battle.MonsterGroup;
 import at.riemer.sebastian.TestDrive.model.battle.MonsterParty;
 import at.riemer.sebastian.TestDrive.model.battle.monster.MonsterRat;
+import at.riemer.sebastian.TestDrive.model.map.BattleMap;
 import at.riemer.sebastian.TestDrive.model.map.RegionalMap;
 import at.riemer.sebastian.TestDrive.model.party.Level;
 import at.riemer.sebastian.TestDrive.model.party.Party;
 import at.riemer.sebastian.TestDrive.model.party.PartyPosition;
 import at.riemer.sebastian.TestDrive.model.party.character.CharacterStats;
-import at.riemer.sebastian.TestDrive.model.party.character.PlayerCharacter;
+import at.riemer.sebastian.TestDrive.model.party.character.PartyMember;
 import at.riemer.sebastian.TestDrive.model.party.character.classes.Vampire;
-import at.riemer.sebastian.TestDrive.model.party.character.playerCharacter.Denzel;
+import at.riemer.sebastian.TestDrive.model.party.character.playerCharacter.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Controller;
@@ -55,6 +56,7 @@ public class StartController {
 
 
         RegionalMap regionalMap = loadRegionalMap();
+        BattleMap battleMap = loadBattleMap();
         Party party = loadParty();
 
         MonsterGenerator monsterGenerator = new MonsterGenerator();
@@ -63,42 +65,51 @@ public class StartController {
 
         GameState gameState = new GameState(
                 regionalMap,
+                battleMap,
                 party
         );
         return gameState;
     }
 
+    private BufferedImage getImageFromPath(String path) throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path);
+        return ImageIO.read(inputStream);
+    }
 
     private RegionalMap loadRegionalMap() throws IOException {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("static/img/worlds/abalon/map.png");
-        BufferedImage image = ImageIO.read(inputStream);
-        RegionalMap regionalMap = new RegionalMap(image,
+
+        RegionalMap regionalMap = new RegionalMap(
                 "img/worlds/abalon/map.png",
+                getImageFromPath("static/img/worlds/abalon/texture_map.png"),
+                getImageFromPath("static/img/worlds/abalon/street_map.png"),
                 resourcePatternResolver.getResources("classpath:static/img/walls/*.png"),
-                resourcePatternResolver.getResources("classpath:static/img/rooms/*.png"),
-                resourcePatternResolver.getResources("classpath:static/img/battle/*.png")
+                resourcePatternResolver.getResources("classpath:static/img/rooms/*.png")
         );
 
         return regionalMap;
     }
 
+    private BattleMap loadBattleMap() throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("static/img/worlds/abalon/battle_map.png");
+        BufferedImage image = ImageIO.read(inputStream);
+        BattleMap battleMap = new BattleMap(image,
+                "img/worlds/abalon/battle_map.png",
+                resourcePatternResolver.getResources("classpath:static/img/battle/*.png")
+        );
+
+        return battleMap;
+    }
+
     private Party loadParty() {
         Party party = new Party();
 
-        PlayerCharacter sebus = new PlayerCharacter(
-                "Sebus",
-                "img/characters/carmen.png",
-                new Vampire()
-        ).withCharacterStats(new CharacterStats(14, 13, 15, 12, 6, 6));
-        sebus.withCurrentHealth(sebus.getCharacterStats()
-                .calcuateMaximumHealth(Level.getLevelAtXpPoints(sebus.getXpPoints())));
-        sebus.withCurrentMana(sebus.getCharacterStats()
-                .calculateMaximumMana(Level.getLevelAtXpPoints(sebus.getXpPoints()), sebus.getCharacterClass()));
 
-        Denzel denzel = new Denzel();
-
-        party.add(sebus);
-        party.add(denzel);
+        party.add(new Emma());
+        party.add(new Joru());
+        party.add(new Laura());
+        party.add(new Simon());
+        party.add(new Isabella());
+        party.add(new Otto());
 
         party.setPartyPosition(new PartyPosition(1, 1, Direction.NORTH));
         return party;

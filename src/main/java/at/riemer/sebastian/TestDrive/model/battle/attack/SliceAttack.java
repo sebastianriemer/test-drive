@@ -11,7 +11,7 @@ public class SliceAttack implements Attack {
 
     @Override
     public String getAttackDescription(String enemyName) {
-        return "schlägt nach " + enemyName;
+        return " schlägt nach " + enemyName;
     }
 
     @Override

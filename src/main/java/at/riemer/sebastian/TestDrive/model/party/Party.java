@@ -1,13 +1,13 @@
 package at.riemer.sebastian.TestDrive.model.party;
 
 import at.riemer.sebastian.TestDrive.model.Direction;
-import at.riemer.sebastian.TestDrive.model.party.character.PlayerCharacter;
+import at.riemer.sebastian.TestDrive.model.party.character.PartyMember;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Party {
-    private List<PlayerCharacter> partyMembers = new ArrayList<>();
+    private List<PartyMember> partyMembers = new ArrayList<>();
     private PartyPosition partyPosition;
 
     public Party() {
@@ -18,12 +18,12 @@ public class Party {
         return partyPosition;
     }
 
-    public List<PlayerCharacter> getPartyMembers() {
+    public List<PartyMember> getPartyMembers() {
         return partyMembers;
     }
 
-    public void add(PlayerCharacter playerCharacter) {
-        this.partyMembers.add(playerCharacter);
+    public void add(PartyMember partyMember) {
+        this.partyMembers.add(partyMember);
     }
 
     public void setPartyPosition(PartyPosition partyPosition) {

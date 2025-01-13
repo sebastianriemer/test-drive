@@ -6,3 +6,59 @@
     font-family: metalMania;
     src:url("/fonts/MetalMania-Regular.ttf");
 }
+
+/* START Config for black screen intro */
+/* Styling for the black screen */
+#blackScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    color: white;
+    display: flex; /* Center content */
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    z-index: 9999; /* Ensure it's above everything */
+}
+
+/* Initial hidden state */
+#blackScreen.hidden {
+    display: none;
+}
+
+/* Glowing text animation */
+#blackScreen p {
+    animation: glow 1.5s infinite alternate;
+}
+
+@keyframes glow {
+    0% {
+        text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 20px #ff00ff, 0 0 30px #ff00ff;
+    }
+    100% {
+        text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ffffff, 0 0 40px #ffffff, 0 0 50px #ffffff;
+    }
+}
+
+/* Transition effect to white */
+@keyframes fadeToWhite {
+    0% {
+        opacity: 1;
+        background-color: black;
+        color: white;
+    }
+    50% {
+        opacity: 1;
+        background-color: white;
+        color: white;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+
+/* END Config for black screen intro */
