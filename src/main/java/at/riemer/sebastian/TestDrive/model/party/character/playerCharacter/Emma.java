@@ -6,15 +6,14 @@ import at.riemer.sebastian.TestDrive.model.items.Stiletto;
 import at.riemer.sebastian.TestDrive.model.party.Level;
 import at.riemer.sebastian.TestDrive.model.party.character.CharacterStats;
 import at.riemer.sebastian.TestDrive.model.party.character.PartyMember;
-import at.riemer.sebastian.TestDrive.model.party.character.Sex;
+import at.riemer.sebastian.TestDrive.model.party.character.Gender;
 import at.riemer.sebastian.TestDrive.model.party.character.classes.FortuneTeller;
-import at.riemer.sebastian.TestDrive.model.party.character.classes.Shaman;
 
 public class Emma extends PartyMember {
 
 
     public Emma() {
-        super("Emma", Sex.FEMALE,"img/characters/small/healer.jpg", new FortuneTeller());
+        super("Emma", Gender.FEMALE,"img/characters/small/healer.jpg", new FortuneTeller());
         this.withCharacterStats(new CharacterStats(9, 9, 14, 18, 14, 10));
         this.withXpPoints(2000);
         this.withBiography("Emmas Eltern starben kurz nach ihrer Geburt. Daher wuchs sie bei ihrer "

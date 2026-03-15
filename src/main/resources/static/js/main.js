@@ -1,12 +1,12 @@
 require.config({
 });
 
-require(['canvas', 'gameState', 'mainWindow', 'runeTable',
+require(['canvas', 'gameState', 'gameModeManager', 'mainWindow', 'runeTable',
         'partyBar', 'textWindow', 'dashBoard',
-        'audioLoader', 'audioManager', 'menu', 'controls'],
-    function (canvas, gameState, mainWindow, runeTable,
+        'audioLoader', 'audioManager', 'menu', 'controls', 'mapManager'],
+    function (canvas, gameState, gameModeManager, mainWindow, runeTable,
         partyBar, textWindow, dashBoard,
-        audioLoader, audioManager, menu, controls) {
+        audioLoader, audioManager, menu, controls, mapManager) {
         console.log('main: begin');
 
         function initGame(){
@@ -20,7 +20,15 @@ require(['canvas', 'gameState', 'mainWindow', 'runeTable',
             console.log('dashBoard inside');
             console.log(dashBoard);
             dashBoard.load();
-            gameState.load();
+
+
+            gameState.load().then(() => {
+                console.log('Game state loaded successfully!');
+                startRenderingLoop();
+            });
+        }
+
+        function startRenderingLoop() {
             setInterval(function() {draw();}, 100);
             setTimeout(function() {controls.unlock();}, 1000);
         }
@@ -30,15 +38,11 @@ require(['canvas', 'gameState', 'mainWindow', 'runeTable',
             runeTable.draw();
             partyBar.draw();
             textWindow.draw();
-            if (gameState.inBattle()) {
-                mainWindow.drawBattle(gameState.getBlockFromBattleMap());
-            } else if (gameState.inRoom()) {
-                mainWindow.drawRoom(gameState.getBlockFromRegionalMap());
-            }
-            else if (gameState.onRegionalMap()) {
-                mainWindow.drawRegionalMap(gameState.getBlockFromRegionalMap());
-            }
-
+            //gameState.draw();
+            // mainWindow.draw();
+            mainWindow.draw(gameModeManager.getMode());
+            drawDebugMap();
+            drawDebugBattleMap();
             //console.log('Drawed at ' + Date.now());
         }
         function startGame() {
@@ -73,5 +77,26 @@ require(['canvas', 'gameState', 'mainWindow', 'runeTable',
                 window.addEventListener('keydown', startGame);
                 window.addEventListener('click', startGame);
         });
+
+        function drawDebugMap() {
+            if (mapManager.regionalMap.mapImage) {
+                canvas.contextHolder.mapDebugContext.drawImage(mapManager.regionalMap.mapImage, 0, 0, 69*4, 69*4);
+                drawPartyPositionOnMap(canvas.contextHolder.mapDebugContext);
+            }
+        }
+
+        function drawDebugBattleMap() {
+            if (mapManager.battleMap.mapImage) {
+                canvas.contextHolder.mapDebugContext2.drawImage(mapManager.battleMap.mapImage, 0, 0, 69*4, 69*4);
+                drawPartyPositionOnMap(canvas.contextHolder.mapDebugContext2);
+            }
+        }
+
+        function drawPartyPositionOnMap(mapDebugContext) {
+                mapDebugContext.fillStyle = '#E200BD';
+                mapDebugContext.fillRect(mapManager.regionalMap.partyPosition.x*3*4, mapManager.regionalMap.partyPosition.y*3*4, 3*4, 3*4);
+            }
     }
+
+
 );

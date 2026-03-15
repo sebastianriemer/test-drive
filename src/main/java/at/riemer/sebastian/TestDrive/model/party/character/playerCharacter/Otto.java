@@ -6,15 +6,14 @@ import at.riemer.sebastian.TestDrive.model.items.Stiletto;
 import at.riemer.sebastian.TestDrive.model.party.Level;
 import at.riemer.sebastian.TestDrive.model.party.character.CharacterStats;
 import at.riemer.sebastian.TestDrive.model.party.character.PartyMember;
-import at.riemer.sebastian.TestDrive.model.party.character.Sex;
+import at.riemer.sebastian.TestDrive.model.party.character.Gender;
 import at.riemer.sebastian.TestDrive.model.party.character.classes.Mercenary;
-import at.riemer.sebastian.TestDrive.model.party.character.classes.Shaman;
 
 public class Otto extends PartyMember {
 
 
     public Otto() {
-        super("Otto", Sex.MALE, "img/characters/small/mercenary.jpg", new Mercenary());
+        super("Otto", Gender.MALE, "img/characters/small/mercenary.jpg", new Mercenary());
         this.withCharacterStats(new CharacterStats(19, 20, 15, 8, 6, 6));
         this.withXpPoints(2000);
         this.withBiography("Otto verbrachte viel Zeit in der Armee und kommt aus Afrika. Dort wuchs er als Sohn eines "

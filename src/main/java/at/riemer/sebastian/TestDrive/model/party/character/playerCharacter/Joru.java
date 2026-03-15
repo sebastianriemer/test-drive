@@ -6,14 +6,14 @@ import at.riemer.sebastian.TestDrive.model.items.Stiletto;
 import at.riemer.sebastian.TestDrive.model.party.Level;
 import at.riemer.sebastian.TestDrive.model.party.character.PartyMember;
 import at.riemer.sebastian.TestDrive.model.party.character.CharacterStats;
-import at.riemer.sebastian.TestDrive.model.party.character.Sex;
+import at.riemer.sebastian.TestDrive.model.party.character.Gender;
 import at.riemer.sebastian.TestDrive.model.party.character.classes.Jester;
 
 public class Joru extends PartyMember {
 
 
     public Joru() {
-        super("Joru", Sex.MALE,"img/characters/small/jester.jpg", new Jester());
+        super("Joru", Gender.MALE,"img/characters/small/jester.jpg", new Jester());
         this.withCharacterStats(new CharacterStats(13, 11, 18, 16, 8, 13));
         this.withXpPoints(2000);
         this.withBiography("Aufgewachsen in einem Wanderzirkus erlernte Joru das Gauklerleben bis er " +

@@ -1,9 +1,19 @@
-define([], function () {
+define(['eventBus', 'gameState'], function (eventBus, gameState) {
     const AudioManager = function () {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioContext = new AudioContext();
         const buffers = {};
         const audioElements = {};
+
+        eventBus.on('partyBumpedWall', () => {
+            const firstPartyMember = gameState.getFirstPartyMember();
+            const sound = firstPartyMember.gender === 'MALE' ? 'party.ouch_male_1' : 'party.ouch_female_1';
+            this.play(sound);
+        });
+
+        eventBus.on('battleStart', () => {
+           // TODO: Sebi hier musst du dann das Geräusch für den Kampfbeginn abspielen!
+        });
 
         // Load and decode audio
         this.loadAudio = function (key, url) {
@@ -34,7 +44,11 @@ define([], function () {
                 console.warn(`Audio "${key}" not loaded.`);
             }
         };
+
+
     };
+
+
 
     return new AudioManager();
 });

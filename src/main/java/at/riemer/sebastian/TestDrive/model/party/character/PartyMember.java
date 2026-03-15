@@ -13,7 +13,7 @@ public class PartyMember {
     private final String portraitFilename;
     private final CharacterClass characterClass;
     private CharacterStats characterStats;
-    private Sex sex;
+    private Gender gender;
 
     private int xpPoints;
     private int currentHealth;
@@ -25,12 +25,12 @@ public class PartyMember {
     private Affections affections = new Affections();
 
     public PartyMember(String name,
-                       Sex sex,
+                       Gender gender,
                        String portraitFilename,
                        CharacterClass characterClass
                        ) {
         this.name = name;
-        this.sex = sex;
+        this.gender = gender;
         this.portraitFilename = portraitFilename;
         this.characterClass = characterClass;
 
@@ -132,7 +132,7 @@ public class PartyMember {
         return this.characterStats.calculateMaximumMana(this.getLevel(), this.getCharacterClass());
     }
 
-    public Sex getSex() {
-        return sex;
+    public Gender getGender() {
+        return gender;
     }
 }

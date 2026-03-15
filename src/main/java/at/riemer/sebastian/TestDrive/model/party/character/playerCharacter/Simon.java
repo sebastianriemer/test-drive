@@ -6,15 +6,14 @@ import at.riemer.sebastian.TestDrive.model.items.Stiletto;
 import at.riemer.sebastian.TestDrive.model.party.Level;
 import at.riemer.sebastian.TestDrive.model.party.character.CharacterStats;
 import at.riemer.sebastian.TestDrive.model.party.character.PartyMember;
-import at.riemer.sebastian.TestDrive.model.party.character.Sex;
-import at.riemer.sebastian.TestDrive.model.party.character.classes.Jester;
+import at.riemer.sebastian.TestDrive.model.party.character.Gender;
 import at.riemer.sebastian.TestDrive.model.party.character.classes.Monk;
 
 public class Simon extends PartyMember {
 
 
     public Simon() {
-        super("Simon", Sex.MALE, "img/characters/small/monk.jpg", new Monk());
+        super("Simon", Gender.MALE, "img/characters/small/monk.jpg", new Monk());
         this.withCharacterStats(new CharacterStats(15, 13, 14, 13, 11, 12));
         this.withXpPoints(2000);
         this.withBiography("Simon wuchs im Kloster auf und er traf einen Fisch. Er ist toll. Er sucht " +

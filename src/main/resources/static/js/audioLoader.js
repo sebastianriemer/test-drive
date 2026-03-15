@@ -3,20 +3,20 @@ define(['audioManager'], function (audioManager) {
         // Define the audio samples to preload
         const sounds = {
             ui: {
-                click: '/audio/click.ogg',
-                hover: '/audio/hover.ogg',
+                //click: '/audio/click.ogg',
+                //hover: '/audio/hover.ogg',
             },
             intro: {
                 start: '/audio/logo_intro2.wav'
             },
             battle: {
                 start: '/audio/stinger_drumroll.mp3',
-                victory: '/audio/victory.ogg',
-                defeat: '/audio/defeat.ogg',
+                //victory: '/audio/victory.ogg',
+                //defeat: '/audio/defeat.ogg',
             },
             environment: {
-                rain: '/audio/rain.ogg',
-                fire: '/audio/fire.ogg',
+                //rain: '/audio/rain.ogg',
+                //fire: '/audio/fire.ogg',
             },
             party: {
                 argh_female_1: '/audio/argh_female_1.ogg',

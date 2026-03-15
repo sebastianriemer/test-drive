@@ -1,4 +1,4 @@
-define(['canvas', 'gameState', 'dashBoard'], function (canvas, gameState, dashBoard) {
+define(['canvas', 'dashBoard', 'partyManager'], function (canvas, dashBoard, partyManager) {
     //let canvas = new Canvas();
     //let gameState = new GameState();
     //let dashBoard = new DashBoard();
@@ -7,14 +7,14 @@ define(['canvas', 'gameState', 'dashBoard'], function (canvas, gameState, dashBo
 
     let partyBar = function() {
         this.draw = function() {
-            for (let i = 0; i < gameState.partyMembers.length; i++) {
-                drawPortrait(i, gameState.partyMembers[i].portraitImage);
-                printName(i, gameState.partyMembers[i]);
-                drawHealthBar(i, gameState.partyMembers[i].maximumHealth, gameState.partyMembers[i].currentHealth);
-                drawManaBar(i, gameState.partyMembers[i].maximumMana, gameState.partyMembers[i].currentMana);
+            for (let i = 0; i < partyManager.partyMembers.length; i++) {
+                drawPortrait(i, partyManager.partyMembers[i].portraitImage);
+                printName(i, partyManager.partyMembers[i]);
+                drawHealthBar(i, partyManager.partyMembers[i].maximumHealth, partyManager.partyMembers[i].currentHealth);
+                drawManaBar(i, partyManager.partyMembers[i].maximumMana, partyManager.partyMembers[i].currentMana);
             }
             // Platzhalter-Portraits zeichnen
-            for (let i = gameState.partyMembers.length; i < 6; i++) {
+            for (let i = partyManager.partyMembers.length; i < 6; i++) {
                 drawPortrait(i, dashBoard.resources.portraitPlaceholderImage);
                 drawHealthBar(i, 0, 0);
                 drawManaBar(i,  0, 0);
