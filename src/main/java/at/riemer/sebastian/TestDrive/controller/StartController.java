@@ -114,7 +114,7 @@ public class StartController {
         party.add(new Isabella());
 
 
-        party.setPartyPosition(new PartyPosition(15, 1, Direction.EAST));
+        party.setPartyPosition(new PartyPosition(18, 1, Direction.EAST));
         return party;
     }
 }

@@ -96,7 +96,11 @@ require(['canvas', 'gameState', 'gameModeManager', 'mainWindow', 'runeTable',
 
         function drawPartyPositionOnMap(mapDebugContext) {
                 mapDebugContext.fillStyle = '#E200BD';
-                mapDebugContext.fillRect(mapManager.regionalMap.partyPosition.x*3*4, mapManager.regionalMap.partyPosition.y*3*4, 3*4, 3*4);
+                mapDebugContext.fillRect(
+                    mapManager.regionalMap.partyPosition.x*3*4,
+                    mapManager.regionalMap.partyPosition.y*3*4,
+                    3*4,
+                    3*4);
             }
     }
 
