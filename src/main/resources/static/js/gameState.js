@@ -38,6 +38,7 @@ RoamingMode, CombatMode) {
                 mapManager.battleMap.mapData &&
                 mapManager.battleMap.mapData.blockMap) {
                 let block = mapManager.battleMap.mapData.blockMap[mapManager.regionalMap.partyPosition.y][mapManager.regionalMap.partyPosition.x];
+                // TODO currently there is no center anymore
                 return NOT_IN_BATTLE_COLOR != block.center;
             }
             return undefined;

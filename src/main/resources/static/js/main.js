@@ -40,9 +40,11 @@ require(['canvas', 'gameState', 'gameModeManager', 'mainWindow', 'runeTable',
             textWindow.draw();
             //gameState.draw();
             // mainWindow.draw();
-            mainWindow.draw(gameModeManager.getMode());
             drawDebugMap();
             drawDebugBattleMap();
+            // TODO remove painting the visual blocks of debug map within mainWindow -> side effect
+            mainWindow.draw(gameModeManager.getMode());
+
             //console.log('Drawed at ' + Date.now());
         }
         function startGame() {
@@ -50,7 +52,7 @@ require(['canvas', 'gameState', 'gameModeManager', 'mainWindow', 'runeTable',
             window.removeEventListener('click', startGame);
             const screen = document.getElementById('blackScreen');
             if (!screen) return;
-            audioManager.play('intro.start');
+            //audioManager.play('intro.start');
             // Change the text content for added effect
             screen.querySelector('p').textContent = 'Los geht\'s...';
 

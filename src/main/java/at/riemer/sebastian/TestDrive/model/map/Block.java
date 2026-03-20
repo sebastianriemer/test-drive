@@ -7,7 +7,9 @@ public class Block {
     private final Wall eastWall;
     private final Wall southWall;
     private final Wall westWall;
-    private final String center;
+    //private final String center;
+    private final Floor floor;
+    private final Ceiling ceiling;
     private final String streetName;
     private final boolean hasNoWalls;
 
@@ -17,7 +19,9 @@ public class Block {
                  String eastWall,
                  String southWall,
                  String westWall,
-                 String center,
+                 String floor,
+                 String ceiling,
+                 //String center,
                  String streetName
     ) {
         this.x = x;
@@ -26,7 +30,9 @@ public class Block {
         this.eastWall = new Wall(eastWall);
         this.southWall = new Wall(southWall);
         this.westWall = new Wall(westWall);
-        this.center = center;
+        this.floor = new Floor(floor);
+        this.ceiling = new Ceiling(ceiling);
+        // this.center = center;
         this.streetName = streetName;
         this.hasNoWalls = surroundedByWhiteWalls();
 
@@ -65,8 +71,16 @@ public class Block {
         return westWall;
     }
 
-    public String getCenter() {
+    /*public String getCenter() {
         return center;
+    }*/
+
+    public Floor getFloor() {
+        return floor;
+    }
+
+    public Ceiling getCeiling() {
+        return ceiling;
     }
 
     public String getStreetName() {

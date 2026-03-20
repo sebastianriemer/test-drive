@@ -5,6 +5,7 @@ define(['eventBus', 'textureManager', 'mapManager'], function (eventBus, texture
         this.draw = function(mainWindow) {
             const texture =
                 textureManager.getBattleTexture(
+                // TODO currently there is no center anymore
                     mapManager.getBlockFromBattleMap().center
                 );
 

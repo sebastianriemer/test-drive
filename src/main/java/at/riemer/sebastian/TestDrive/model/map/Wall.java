@@ -4,7 +4,7 @@ public class Wall {
     private String texture;
     private boolean solid;
 
-    public Wall(String texture) {
+    public  Wall(String texture) {
         this.texture = texture;
         this.solid = isSolid(texture);
     }

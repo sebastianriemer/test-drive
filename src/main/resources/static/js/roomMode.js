@@ -4,6 +4,7 @@ define(['eventBus', 'textureManager', 'mapManager'], function (eventBus, texture
 
         this.draw = function(mainWindow) {
             textureManager.getRoomTexture(
+            // TODO currently there is no center anymore
                mapManager.getBlockFromRegionalMap().center
            )
             mainWindow.drawRoom(texture);

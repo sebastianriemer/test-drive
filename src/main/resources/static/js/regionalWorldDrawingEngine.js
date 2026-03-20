@@ -3,45 +3,57 @@ define(['canvas', 'textureManager', 'mapManager'], function (canvas, textureMana
     // let battleMap = gameState.battleMap;
     const mainWindowOffsetX = 90;
     const mainWindowOffsetY = 10;
+    const floorPositions = {
+        4: { y: 148, spacing: 10 },
+        3: { y: 160, spacing: 20 },
+        2: { y: 180, spacing: 40 },
+        1: { y: 210, spacing: 80 },
+        0: { y: 250, spacing: 160 }
+    };
 
     let regionalWorldDrawingEngine = function() {
         this.draw = function() {
-        let backgroundCeilingColor = '#6fc9f9';
-        let backgroundCeilingGradient1Color = '#4fa9e9';
-        let backgroundCeilingGradient2Color = '#5063d9';
-        let backgroundFloorGradient1Color = '#b9923e';
-        let backgroundFloorGradient2Color = '#c9a24e';
-        let backgroundFloorGradient3Color = '#d9b25e';
-        let backgroundFloorColor = '#e9c26e';
+            let backgroundCeilingColor = '#6fc9f9';
+            let backgroundCeilingGradient1Color = '#4fa9e9';
+            let backgroundCeilingGradient2Color = '#5063d9';
+            let backgroundFloorGradient1Color = '#b9923e';
+            let backgroundFloorGradient2Color = '#c9a24e';
+            let backgroundFloorGradient3Color = '#d9b25e';
+            let backgroundFloorColor = '#e9c26e';
 
-        canvas.contextHolder.context.fillStyle = backgroundCeilingColor;
-        canvas.contextHolder.context.fillRect(90, 10, 265, 145);
-        canvas.contextHolder.context.fillStyle = backgroundCeilingGradient1Color;
-        canvas.contextHolder.context.fillRect(90, 145, 265, 5);
-        canvas.contextHolder.context.fillStyle = backgroundCeilingGradient2Color;
-        canvas.contextHolder.context.fillRect(90, 150, 265, 1);
-        canvas.contextHolder.context.fillStyle = backgroundFloorGradient1Color;
-        canvas.contextHolder.context.fillRect(90, 151, 265, 2);
-        canvas.contextHolder.context.fillStyle = backgroundFloorGradient2Color;
-        canvas.contextHolder.context.fillRect(90, 153, 265, 3);
-        canvas.contextHolder.context.fillStyle = backgroundFloorGradient3Color;
-        canvas.contextHolder.context.fillRect(90, 156, 265, 5);
-        canvas.contextHolder.context.fillStyle = backgroundFloorColor;
-        canvas.contextHolder.context.fillRect(90, 161, 265, 114);
-        canvas.contextHolder.context.beginPath();
-        canvas.contextHolder.context.lineWidth = 1;
-        canvas.contextHolder.context.strokeStyle = '#00F0E5';
-        canvas.contextHolder.context.stroke();
-        canvas.contextHolder.context.beginPath();
+            canvas.contextHolder.context.fillStyle = backgroundCeilingColor;
+            canvas.contextHolder.context.fillRect(90, 10, 265, 145);
+            canvas.contextHolder.context.fillStyle = backgroundCeilingGradient1Color;
+            canvas.contextHolder.context.fillRect(90, 145, 265, 5);
+            canvas.contextHolder.context.fillStyle = backgroundCeilingGradient2Color;
+            canvas.contextHolder.context.fillRect(90, 150, 265, 1);
+            canvas.contextHolder.context.fillStyle = backgroundFloorGradient1Color;
+            canvas.contextHolder.context.fillRect(90, 151, 265, 2);
+            canvas.contextHolder.context.fillStyle = backgroundFloorGradient2Color;
+            canvas.contextHolder.context.fillRect(90, 153, 265, 3);
+            canvas.contextHolder.context.fillStyle = backgroundFloorGradient3Color;
+            canvas.contextHolder.context.fillRect(90, 156, 265, 5);
+            canvas.contextHolder.context.fillStyle = backgroundFloorColor;
+            canvas.contextHolder.context.fillRect(90, 161, 265, 114);
+            canvas.contextHolder.context.beginPath();
+            canvas.contextHolder.context.lineWidth = 1;
+            canvas.contextHolder.context.strokeStyle = '#00F0E5';
+            canvas.contextHolder.context.stroke();
+            canvas.contextHolder.context.beginPath();
 
-        canvas.contextHolder.context.beginPath();
-        drawRow(4);
-        drawRow(3);
-        drawRow(2);
-        drawRow(1);
-        drawRow(0);
-        canvas.contextHolder.context.beginPath();
-        canvas.contextHolder.context.lineWidth = 1;
+            canvas.contextHolder.context.beginPath();
+            drawRowFloor(4);
+            drawRow(4);
+            drawRowFloor(3);
+            drawRow(3);
+            drawRowFloor(2);
+            drawRow(2);
+            drawRowFloor(1);
+            drawRow(1);
+            drawRowFloor(0);
+            drawRow(0);
+            canvas.contextHolder.context.beginPath();
+            canvas.contextHolder.context.lineWidth = 1;
         }
     }
 
@@ -82,6 +94,91 @@ define(['canvas', 'textureManager', 'mapManager'], function (canvas, textureMana
         if (centerBlock) {
             drawBlockAsCenter(centerBlock, row);
         }
+    }
+
+    function drawRowFloor(row) {
+
+        let blocks = [
+            {block: getBlockIfInbound(calculate3rdLeftBlockY(row), calculate3rdLeftBlockX(row)), col:-3},
+            {block: getBlockIfInbound(calculate2ndLeftBlockY(row), calculate2ndLeftBlockX(row)), col:-2},
+            {block: getBlockIfInbound(calculateLeftBlockY(row), calculateLeftBlockX(row)), col:-1},
+            {block: getBlockIfInbound(calculateCenterBlockY(row), calculateCenterBlockX(row)), col:0},
+            {block: getBlockIfInbound(calculateRightBlockY(row), calculateRightBlockX(row)), col:1},
+            {block: getBlockIfInbound(calculate2ndRightBlockY(row), calculate2ndRightBlockX(row)), col:2},
+            {block: getBlockIfInbound(calculate3rdRightBlockY(row), calculate3rdRightBlockX(row)), col:3}
+        ];
+
+        blocks.forEach(entry => {
+
+            if (!entry.block) return;
+
+            let pos = floorPositions[row];
+
+            let screenX = 140 + entry.col * pos.spacing;
+            let screenY = pos.y;
+
+            drawFloor(entry.block, row, screenX, screenY);
+            drawBlockOnDebugMap(entry.block);
+        });
+    }
+
+
+
+    function drawFloor(block, row, screenX, screenY) {
+        let floorTexture = textureManager.getFloorTexture(block.floor.texture);
+
+        if (!floorTexture) return;
+
+        drawFloorTexture(
+            floorTexture,
+            mainWindowOffsetX + screenX,
+            mainWindowOffsetY + 200 + screenY,
+            row
+        );
+    }
+
+    function drawFloorTexture(texture, x, y, row) {
+
+        let scaleX;
+        let scaleY;
+
+        if (row == 4) {
+            scaleX = 0.20;
+            scaleY = 0.08;
+        }
+        else if (row == 3) {
+            scaleX = 0.32;
+            scaleY = 0.12;
+        }
+        else if (row == 2) {
+            scaleX = 0.55;
+            scaleY = 0.20;
+        }
+        else if (row == 1) {
+            scaleX = 0.90;
+            scaleY = 0.35;
+        }
+        else if (row == 0) {
+            scaleX = 1.4;
+            scaleY = 0.55;
+        }
+
+        canvas.contextHolder.context.resetTransform();
+        canvas.contextHolder.context.scale(scaleX, scaleY);
+
+        canvas.contextHolder.context.drawImage(
+            texture,
+            0,
+            0,
+            texture.width,
+            texture.height,
+            x,
+            y,
+            texture.width,
+            texture.height
+        );
+
+        canvas.contextHolder.context.resetTransform();
     }
 
     function getBlockIfInbound(y, x) {

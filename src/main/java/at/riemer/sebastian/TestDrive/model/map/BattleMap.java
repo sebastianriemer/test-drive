@@ -35,6 +35,9 @@ public class BattleMap {
             for (int x = 0; x < mapAsImage.getWidth() / 3; x ++) {
                 String centerHex = getImagePixelAsHexString(mapAsImage, x*3 + 1, y*3 + 1);
 
+                // TODO: It can be okayish to keep the sole real information regarding battlemap,
+                // being centerHex as loaded above as in the block below;
+                // But honestly, the rest of the block is garbage data right now
                 Block block = new Block(x,
                         y,
                         getImagePixelAsHexString(mapAsImage, x*3 + 1, y*3),
@@ -42,6 +45,7 @@ public class BattleMap {
                         getImagePixelAsHexString(mapAsImage, x*3 + 1, y*3 + 2),
                         getImagePixelAsHexString(mapAsImage, x*3, y*3 + 1),
                         centerHex,
+                        "ffffff",
                         streetNameLookupService.getStreetName(centerHex)
                 );
                 row.add(block);

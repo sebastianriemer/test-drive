@@ -15,29 +15,36 @@ public class RegionalMap {
     private List<List<Block>> blockMap = new ArrayList<>();
     private String mapFilename;
     private Map<String, Texture> wallTextureMap = new HashMap<>();
+    private Map<String, Texture> floorTextureMap = new HashMap<>();
     private Map<String, Texture> roomTextureMap = new HashMap<>();
 
     public RegionalMap(String mapFilename,
                        BufferedImage textureMapAsImage,
                        BufferedImage streetMapAsImage,
+                       BufferedImage floorMapAsImage,
                        Resource[] wallResources,
+                       Resource[] floorResources,
                        Resource[] roomResources
     ) {
         this.mapFilename = mapFilename;
-        initBlockMap(textureMapAsImage, streetMapAsImage);
+        initBlockMap(textureMapAsImage, floorMapAsImage, streetMapAsImage);
         initWallTextureMap(wallResources);
+        initFloorTextureMap(floorResources);
         initRoomTextureMap(roomResources);
 
     }
 
-    private void initBlockMap(BufferedImage textureMapAsImage, BufferedImage streetMapAsImage) {
+    private void initBlockMap(BufferedImage textureMapAsImage, BufferedImage floorMapAsImage, BufferedImage streetMapAsImage) {
         StreetNameLookupService streetNameLookupService = new StreetNameLookupService();
 
         for (int y = 0; y < textureMapAsImage.getHeight() / 3; y++) {
             List<Block> row = new ArrayList<>();
             blockMap.add(row);
             for (int x = 0; x < textureMapAsImage.getWidth() / 3; x++) {
-                String centerHex = getImagePixelAsHexString(textureMapAsImage, x * 3 + 1, y * 3 + 1);
+                // String centerHex = getImagePixelAsHexString(textureMapAsImage, x * 3 + 1, y * 3 + 1);
+                String floor = getImagePixelAsHexString(floorMapAsImage, x * 3 + 1, y * 3 + 1);
+                String ceiling = "ffffff"; // no ceilingMap exists yet; could be of interest later on, as in underground
+                // dungeons
                 String centerHexOnStreetMap = getImagePixelAsHexString(streetMapAsImage, x * 3 + 1, y * 3 + 1);
                 Block block = new Block(x,
                         y,
@@ -45,7 +52,8 @@ public class RegionalMap {
                         getImagePixelAsHexString(textureMapAsImage, x * 3 + 2, y * 3 + 1),
                         getImagePixelAsHexString(textureMapAsImage, x * 3 + 1, y * 3 + 2),
                         getImagePixelAsHexString(textureMapAsImage, x * 3, y * 3 + 1),
-                        centerHex,
+                        floor,
+                        ceiling,
                         streetNameLookupService.getStreetName(centerHexOnStreetMap)
                 );
                 row.add(block);
@@ -61,7 +69,14 @@ public class RegionalMap {
             );
         }
     }
-
+    private void initFloorTextureMap(Resource[] floorResources) {
+        for (int i = 0; i < floorResources.length; i++) {
+            this.floorTextureMap.put(
+                    FilenameUtils.removeExtension(floorResources[i].getFilename()),
+                    new Texture("img/floors/" + floorResources[i].getFilename())
+            );
+        }
+    }
     private void initRoomTextureMap(Resource[] roomResources) {
         for (int i = 0; i < roomResources.length; i++) {
             this.roomTextureMap.put(
@@ -105,4 +120,7 @@ public class RegionalMap {
         return roomTextureMap;
     }
 
+    public Map<String, Texture> getFloorTextureMap() {
+        return floorTextureMap;
+    }
 }

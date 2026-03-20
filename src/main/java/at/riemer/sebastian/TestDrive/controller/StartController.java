@@ -82,13 +82,16 @@ public class StartController {
                 "img/worlds/abalon/map.png",
                 getImageFromPath("static/img/worlds/abalon/texture_map.png"),
                 getImageFromPath("static/img/worlds/abalon/street_map.png"),
+                getImageFromPath("static/img/worlds/abalon/floor_map.png"),
                 resourcePatternResolver.getResources("classpath:static/img/walls/*.png"),
+                resourcePatternResolver.getResources("classpath:static/img/floors/*.png"),
                 resourcePatternResolver.getResources("classpath:static/img/rooms/*.png")
         );
 
         return regionalMap;
     }
 
+    // TODO: think about whether a textureMap-like initialization really makes sense for a battleMap?
     private BattleMap loadBattleMap() throws IOException {
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream("static/img/worlds/abalon/battle_map.png");
         BufferedImage image = ImageIO.read(inputStream);
@@ -111,7 +114,7 @@ public class StartController {
         party.add(new Isabella());
 
 
-        party.setPartyPosition(new PartyPosition(1, 1, Direction.NORTH));
+        party.setPartyPosition(new PartyPosition(15, 1, Direction.EAST));
         return party;
     }
 }
