@@ -1,4 +1,4 @@
-define(['canvas', 'gameState', 'regionalWorldDrawingEngine'], function (canvas, gameState, regionalWorldDrawingEngine) {
+define(['canvas', 'gameState', 'regionalWorldDrawingEngine2'], function (canvas, gameState, regionalWorldDrawingEngine2) {
 
     let mainWindow = function() {
         this.draw = function(mode) {
@@ -6,7 +6,7 @@ define(['canvas', 'gameState', 'regionalWorldDrawingEngine'], function (canvas, 
         }
 
         this.drawRegionalMap = function() {
-            regionalWorldDrawingEngine.draw();
+            regionalWorldDrawingEngine2.draw();
         };
 
         this.drawBattle = function(image) {

@@ -1,4 +1,113 @@
 define(['canvas', 'textureManager', 'mapManager'], function (canvas, textureManager, mapManager) {
+
+    const PROJ = {
+        centerX: 220,
+        horizonY: 150,
+        scale: 120
+    };
+
+    const camera = {
+        x: map.partyPosition.x,
+        y: map.partyPosition.y,
+        dir: map.partyPosition.direction
+    };
+
+    function toViewSpace(wx, wy) {
+        let dx = wx - camera.x;
+        let dy = wy - camera.y;
+
+        switch (camera.dir) {
+            case 'NORTH': return { x: dx, y: -dy };
+            case 'SOUTH': return { x: -dx, y: dy };
+            case 'EAST':  return { x: dy, y: dx };
+            case 'WEST':  return { x: -dy, y: -dx };
+        }
+    }
+
+    function drawFloorTile(blockX, blockY) {
+
+        let v0 = toViewSpace(blockX, blockY);
+        let v1 = toViewSpace(blockX + 1, blockY);
+        let v2 = toViewSpace(blockX + 1, blockY + 1);
+        let v3 = toViewSpace(blockX, blockY + 1);
+
+        let p0 = project(v0.x, v0.y);
+        let p1 = project(v1.x, v1.y);
+        let p2 = project(v2.x, v2.y);
+        let p3 = project(v3.x, v3.y);
+
+        if (!p0 || !p1 || !p2 || !p3) return;
+
+        let texture = textureManager.getFloorTexture(
+            map.mapData.blockMap[blockY][blockX].center
+        );
+
+        if (!texture) return;
+
+        // draw as trapezoid
+        drawTexturedQuad(texture, p0, p1, p2, p3);
+    }
+
+    function project(vx, vy) {
+        if (vy <= 0) return null; // behind camera
+
+        let scale = PROJ.scale / vy;
+
+        return {
+            x: PROJ.centerX + vx * scale,
+            y: PROJ.horizonY + scale * 40,
+            scale: scale
+        };
+    }
+
+    function drawTexturedQuad(texture, p0, p1, p2, p3) {
+
+        let steps = 20;
+
+        for (let i = 0; i < steps; i++) {
+
+            let t1 = i / steps;
+            let t2 = (i + 1) / steps;
+
+            let xa = lerp(p0.x, p3.x, t1);
+            let xb = lerp(p1.x, p2.x, t1);
+
+            let ya = lerp(p0.y, p3.y, t1);
+            let yb = lerp(p1.y, p2.y, t1);
+
+            let xa2 = lerp(p0.x, p3.x, t2);
+            let xb2 = lerp(p1.x, p2.x, t2);
+
+            let ya2 = lerp(p0.y, p3.y, t2);
+            let yb2 = lerp(p1.y, p2.y, t2);
+
+            let texY = texture.height * t1;
+
+            canvas.contextHolder.context.drawImage(
+                texture,
+                0, texY, texture.width, texture.height / steps,
+                xa, ya,
+                xb - xa,
+                yb - ya
+            );
+        }
+    }
+
+    function lerp(a, b, t) {
+        return a + (b - a) * t;
+    }
+
+    for (let y = -5; y <= 5; y++) {
+        for (let x = -5; x <= 5; x++) {
+
+            let wx = camera.x + x;
+            let wy = camera.y + y;
+
+            drawFloorTile(wx, wy);
+        }
+    }
+
+
     let map = mapManager.regionalMap;
     // let battleMap = gameState.battleMap;
     const mainWindowOffsetX = 90;
