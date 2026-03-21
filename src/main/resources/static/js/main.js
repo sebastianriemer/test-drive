@@ -3,13 +3,32 @@ require.config({
 
 require(['canvas', 'gameState', 'gameModeManager', 'mainWindow', 'runeTable',
         'partyBar', 'textWindow', 'dashBoard',
-        'audioLoader', 'audioManager', 'menu', 'controls', 'mapManager'],
+        'audioLoader', 'audioManager', 'menu', 'controls', 'mapManager', 'regionalWorldDrawingEngine2'],
     function (canvas, gameState, gameModeManager, mainWindow, runeTable,
         partyBar, textWindow, dashBoard,
-        audioLoader, audioManager, menu, controls, mapManager) {
+        audioLoader, audioManager, menu, controls, mapManager, regionalWorldDrawingEngine2) {
         console.log('main: begin');
 
+        function bindSlider(id, key) {
+            const slider = document.getElementById(id);
+            const label = document.getElementById(id.replace("Slider", "Value"));
+
+            slider.addEventListener("input", () => {
+                regionalWorldDrawingEngine2.settings[key] = parseFloat(slider.value);
+                label.textContent = slider.value;
+            });
+        }
+
+        function bindCheckbox(id, key) {
+            const checkBox = document.getElementById(id);
+
+            checkBox.addEventListener("change", () => {
+                regionalWorldDrawingEngine2.settings[key] = checkBox.checked;
+            });
+        }
+
         function initGame(){
+            mainWindow.setRenderer(regionalWorldDrawingEngine2);
             console.log('main.init()...');
             menu.init();
             canvas.initCanvas();
@@ -22,6 +41,15 @@ require(['canvas', 'gameState', 'gameModeManager', 'mainWindow', 'runeTable',
             dashBoard.load();
 
 
+
+            // bind all
+            bindSlider("scaleSlider", "scale");
+            bindSlider("horizonSlider", "horizonY");
+            bindSlider("stretchSlider", "stretch");
+            bindSlider("nearSlider", "near");
+            bindSlider("depthSlider", "maxDepth");
+            bindSlider("widthSlider", "width");
+            bindCheckbox("imageSoothingCheckbox", "imageSmoothingEnabled");
             gameState.load().then(() => {
                 console.log('Game state loaded successfully!');
                 startRenderingLoop();
@@ -29,14 +57,14 @@ require(['canvas', 'gameState', 'gameModeManager', 'mainWindow', 'runeTable',
         }
 
         function startRenderingLoop() {
-            setInterval(function() {draw();}, 100);
+                setInterval(function() {draw();}, 100);
             setTimeout(function() {controls.unlock();}, 1000);
         }
 
         function draw() {
             dashBoard.draw();
             runeTable.draw();
-            partyBar.draw();
+
             textWindow.draw();
             //gameState.draw();
             // mainWindow.draw();
@@ -44,6 +72,7 @@ require(['canvas', 'gameState', 'gameModeManager', 'mainWindow', 'runeTable',
             drawDebugBattleMap();
             // TODO remove painting the visual blocks of debug map within mainWindow -> side effect
             mainWindow.draw(gameModeManager.getMode());
+            partyBar.draw();
 
             //console.log('Drawed at ' + Date.now());
         }

@@ -1,12 +1,18 @@
-define(['canvas', 'gameState', 'regionalWorldDrawingEngine2'], function (canvas, gameState, regionalWorldDrawingEngine2) {
+define(['canvas', 'gameState'], function (canvas, gameState) {
 
     let mainWindow = function() {
+        let renderer = null;
+
+        this.setRenderer = function(r) {
+            renderer = r;
+        };
+
         this.draw = function(mode) {
             mode.draw(this);
         }
 
         this.drawRegionalMap = function() {
-            regionalWorldDrawingEngine2.draw();
+            renderer.draw();
         };
 
         this.drawBattle = function(image) {
@@ -16,31 +22,6 @@ define(['canvas', 'gameState', 'regionalWorldDrawingEngine2'], function (canvas,
         this.drawRoom = function(image) {
              drawImageInFullScreen(image);
         };
-
-       /* this.draw = function() {
-            if (gameState.inBattle()) {
-                this.drawImageInFullScreen(
-                    textureManager.getBattleTexture(
-                        mapManager.getBlockFromBattleMap().center
-                    )
-                );
-            } else if (gameState.inRoom()) {
-                this.drawImageInFullScreen(
-                    textureManager.getRoomTexture(
-                        mapManager.getBlockFromRegionalMap().center
-                    )
-                );
-                this.printTextBelowMainWindow(
-                    gameState.getTextForBelowMainWindow()
-                );
-            }
-            else if (gameState.onRegionalMap()) {
-                this.drawRegionalMap(
-                    mapManager.getBlockFromRegionalMap()
-                );
-            }
-        }*/
-
 
     };
     if (!mainWindow.instance) {
