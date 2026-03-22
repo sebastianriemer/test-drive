@@ -106,15 +106,16 @@ public class StartController {
     private Party loadParty() {
         Party party = new Party();
 
+        party.add(new Isabella());
         party.add(new Otto());
         party.add(new Emma());
         party.add(new Joru());
         party.add(new Laura());
         party.add(new Simon());
-        party.add(new Isabella());
 
 
-        party.setPartyPosition(new PartyPosition(18, 1, Direction.EAST));
+
+        party.setPartyPosition(new PartyPosition(4, 16, Direction.EAST));
         return party;
     }
 }

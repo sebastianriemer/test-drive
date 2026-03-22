@@ -1,4 +1,4 @@
-define(['canvas', 'gameState'], function (canvas, gameState) {
+define(['canvas', 'gameState', 'layout'], function (canvas, gameState, layout) {
 
     let mainWindow = function() {
         let renderer = null;
@@ -8,7 +8,16 @@ define(['canvas', 'gameState'], function (canvas, gameState) {
         };
 
         this.draw = function(mode) {
-            mode.draw(this);
+            const r = layout.LAYOUT.mainWindow;
+            withClipping(canvas.contextHolder.context, r, () => {
+                let runeWindowColor = Math.random() > 0.5? '#dfe0ff' : '#eff0ff';
+                canvas.contextHolder.context.fillStyle = runeWindowColor;
+                canvas.contextHolder.context.fillRect(
+                    r.x, r.y, r.width, r.height
+                );
+
+                mode.draw(this);
+            });
         }
 
         this.drawRegionalMap = function() {
@@ -28,6 +37,18 @@ define(['canvas', 'gameState'], function (canvas, gameState) {
         mainWindow.instance = new mainWindow();
     }
     return mainWindow.instance;
+
+    function withClipping(ctx, rect, drawFn) {
+        ctx.save();
+
+        ctx.beginPath();
+        ctx.rect(rect.x, rect.y, rect.width, rect.height);
+        ctx.clip();
+
+        drawFn();
+
+        ctx.restore();
+    }
 
     function drawImage(image, x, y, scaleX, scaleY, offsetX, widthX) {
         if (offsetX == undefined) {

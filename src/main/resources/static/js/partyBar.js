@@ -1,66 +1,110 @@
-define(['canvas', 'dashBoard', 'partyManager'], function (canvas, dashBoard, partyManager) {
-    //let canvas = new Canvas();
-    //let gameState = new GameState();
-    //let dashBoard = new DashBoard();
-    let xOffset = 100;
-    let yOffset = 370;
+define(['canvas', 'dashBoard', 'partyManager', 'layout'], function (canvas, dashBoard, partyManager, layout) {
 
     let partyBar = function() {
+
         this.draw = function() {
-            for (let i = 0; i < partyManager.partyMembers.length; i++) {
-                drawPortrait(i, partyManager.partyMembers[i].portraitImage);
-                printName(i, partyManager.partyMembers[i]);
-                drawHealthBar(i, partyManager.partyMembers[i].maximumHealth, partyManager.partyMembers[i].currentHealth);
-                drawManaBar(i, partyManager.partyMembers[i].maximumMana, partyManager.partyMembers[i].currentMana);
-            }
-            // Platzhalter-Portraits zeichnen
-            for (let i = partyManager.partyMembers.length; i < 6; i++) {
-                drawPortrait(i, dashBoard.resources.portraitPlaceholderImage);
-                drawHealthBar(i, 0, 0);
-                drawManaBar(i,  0, 0);
-            }
-        }
+            const ctx = canvas.contextHolder.context;
+            const r = layout.LAYOUT.partyBar;
+
+            withClipping(ctx, r, () => {
+                ctx.save();
+
+                // 🔥 Move origin into party bar
+                ctx.translate(r.x, r.y);
+
+                const slotWidth = r.width / 6;
+                const portraitSize = 80;
+
+                for (let i = 0; i < 6; i++) {
+                    const member = partyManager.partyMembers[i];
+                    const x = i * slotWidth;
+
+                    if (member) {
+                        drawPortrait(ctx, x, member.portraitImage, portraitSize);
+                        printName(ctx, x, member.name);
+                        drawHealthBar(ctx, x, member.maximumHealth, member.currentHealth);
+                        drawManaBar(ctx, x, member.maximumMana, member.currentMana);
+                    } else {
+                        drawPortrait(ctx, x, dashBoard.resources.portraitPlaceholderImage, portraitSize);
+                        drawHealthBar(ctx, x, 0, 0);
+                        drawManaBar(ctx, x, 0, 0);
+                    }
+                }
+
+                ctx.restore();
+            });
+        };
     };
 
-   if (!partyBar.instance) {
+    if (!partyBar.instance) {
         partyBar.instance = new partyBar();
     }
     return partyBar.instance;
 
-    function drawPortrait(partyMemberPosition, portraitImage) {
-        canvas.contextHolder.context.drawImage(portraitImage, 10+partyMemberPosition*xOffset, yOffset);
+    // =========================
+    // Helpers
+    // =========================
+
+    function withClipping(ctx, rect, drawFn) {
+        ctx.save();
+
+        ctx.beginPath();
+        ctx.rect(rect.x, rect.y, rect.width, rect.height);
+        ctx.clip();
+
+        drawFn();
+
+        ctx.restore();
     }
 
-    function printName(partyMemberPosition, partyMember) {
-        canvas.contextHolder.context.resetTransform();
-        canvas.contextHolder.context.fillStyle = '#ffd800';
-        canvas.contextHolder.context.strokeStyle = '#000000';
-        canvas.contextHolder.context.font = "22px metalMania";
-
-        canvas.contextHolder.context.fillText(partyMember.name, 40+partyMemberPosition*xOffset, yOffset + 96);
-        canvas.contextHolder.context.strokeText(partyMember.name, 40+partyMemberPosition*xOffset, yOffset + 96);
-        canvas.contextHolder.context.fill();
-        canvas.contextHolder.context.stroke();
+    function drawPortrait(ctx, x, image, size) {
+        if (!image) return;
+        ctx.drawImage(image, x , 5, size, size);
     }
 
-    function drawHealthBar(partyMemberPosition, maximumHealth, currentHealth) {
-        let fullBarHeight = 80;
-        canvas.contextHolder.context.fillStyle = '#ee8888';
-        canvas.contextHolder.context.fillRect(90+partyMemberPosition*xOffset, yOffset, 10, fullBarHeight);
-        let currentBarHeight = fullBarHeight * currentHealth / maximumHealth;
-        canvas.contextHolder.context.fillStyle = '#ff0000';
-        canvas.contextHolder.context.fillRect(90+partyMemberPosition*xOffset, yOffset, 10, currentBarHeight);
+    function printName(ctx, x, name) {
+        if (!name) return;
+
+        ctx.fillStyle = '#ffd800';
+        ctx.strokeStyle = '#000000';
+        ctx.font = "18px metalMania";
+        ctx.textAlign = "center";
+
+        const textX = x + 50;
+        const textY = 95;
+
+        ctx.fillText(name, textX, textY);
+        ctx.strokeText(name, textX, textY);
     }
 
+    function drawHealthBar(ctx, x, max, current) {
+        const fullHeight = 80;
+        const barX = x + 80;
+        const barY = 5;
 
-    function drawManaBar(partyMemberPosition, maximumMana, currentMana) {
-        let fullBarHeight = 80;
-        canvas.contextHolder.context.fillStyle = '#8888ee';
-        canvas.contextHolder.context.fillRect(100+partyMemberPosition*xOffset, yOffset, 10, fullBarHeight);
-        let currentBarHeight = fullBarHeight * currentMana / maximumMana;
-        canvas.contextHolder.context.fillStyle = '#0000ff';
-        canvas.contextHolder.context.fillRect(100+partyMemberPosition*xOffset, yOffset, 10, currentBarHeight);
+        ctx.fillStyle = '#ee8888';
+        ctx.fillRect(barX, barY, 8, fullHeight);
+
+        if (max > 0) {
+            const currentHeight = fullHeight * (current / max);
+            ctx.fillStyle = '#ff0000';
+            ctx.fillRect(barX, barY + (fullHeight - currentHeight), 8, currentHeight);
+        }
     }
 
-}
-);
+    function drawManaBar(ctx, x, max, current) {
+        const fullHeight = 80;
+        const barX = x + 90;
+        const barY = 5;
+
+        ctx.fillStyle = '#8888ee';
+        ctx.fillRect(barX, barY, 8, fullHeight);
+
+        if (max > 0) {
+            const currentHeight = fullHeight * (current / max);
+            ctx.fillStyle = '#0000ff';
+            ctx.fillRect(barX, barY + (fullHeight - currentHeight), 8, currentHeight);
+        }
+    }
+
+});

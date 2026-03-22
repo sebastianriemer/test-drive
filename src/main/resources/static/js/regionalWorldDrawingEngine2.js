@@ -2,8 +2,7 @@ define(['canvas','textureManager','mapManager'], function(canvas, textureManager
 
     const map = mapManager.regionalMap;
     const WALL_HEIGHT = 1;
-    //const MAX_DEPTH = 5;
-    //const NEAR = 0.8;
+
 
     const PROJ = {
         centerX: 260,
@@ -15,12 +14,12 @@ define(['canvas','textureManager','mapManager'], function(canvas, textureManager
         imageSmoothingEnabled: () => RENDER_SETTINGS.imageSmoothingEnabled
     };
     const RENDER_SETTINGS = {
-        scale: 120,
-        horizonY: 150,
-        stretch: 0.8,
-        width: 0.5,
-        near: 0.8,
-        maxDepth: 5,
+        scale: 114,
+        horizonY: 169,
+        stretch: 0.55,
+        width: 1.3,
+        near: 0.25,
+        maxDepth: 4,
         imageSmoothingEnabled: true
     };
 
@@ -50,21 +49,48 @@ define(['canvas','textureManager','mapManager'], function(canvas, textureManager
         }
     }
 
-    // ---- Draw a textured quad as two simple triangles ----
-    function drawTexturedQuad(ctx, texture, pA,pB,pC,pD){
-        if(!texture) return;
+    function drawTexturedQuadUV(ctx, tex, pA, pB, pC, pD, uvA, uvB, uvC, uvD) {
+        drawTriangle(ctx, tex, pA, pB, pC,
+            uvA.u, uvA.v,
+            uvB.u, uvB.v,
+            uvC.u, uvC.v
+        );
 
-        // crude mapping: two triangles (like your red debug quads)
+        drawTriangle(ctx, tex, pA, pC, pD,
+            uvA.u, uvA.v,
+            uvC.u, uvC.v,
+            uvD.u, uvD.v
+        );
+    }
+
+    function drawTriangle(ctx, img,
+        p0, p1, p2,
+        u0, v0,
+        u1, v1,
+        u2, v2) {
+
         ctx.save();
+
         ctx.beginPath();
-        ctx.moveTo(pA.x,pA.y); ctx.lineTo(pB.x,pB.y); ctx.lineTo(pC.x,pC.y); ctx.lineTo(pD.x,pD.y); ctx.closePath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.closePath();
         ctx.clip();
-        // map texture to bounding box of quad
-        const minX = Math.min(pA.x,pB.x,pC.x,pD.x);
-        const minY = Math.min(pA.y,pB.y,pC.y,pD.y);
-        const maxX = Math.max(pA.x,pB.x,pC.x,pD.x);
-        const maxY = Math.max(pA.y,pB.y,pC.y,pD.y);
-        ctx.drawImage(texture, 0,0, texture.width, texture.height, minX,minY, maxX-minX, maxY-minY);
+
+        // Compute affine transform
+        const denom = (u0*(v1 - v2) + u1*(v2 - v0) + u2*(v0 - v1));
+
+        const a = (p0.x*(v1 - v2) + p1.x*(v2 - v0) + p2.x*(v0 - v1)) / denom;
+        const b = (p0.y*(v1 - v2) + p1.y*(v2 - v0) + p2.y*(v0 - v1)) / denom;
+        const c = (p0.x*(u2 - u1) + p1.x*(u0 - u2) + p2.x*(u1 - u0)) / denom;
+        const d = (p0.y*(u2 - u1) + p1.y*(u0 - u2) + p2.y*(u1 - u0)) / denom;
+        const e = (p0.x*(u1*v2 - u2*v1) + p1.x*(u2*v0 - u0*v2) + p2.x*(u0*v1 - u1*v0)) / denom;
+        const f = (p0.y*(u1*v2 - u2*v1) + p1.y*(u2*v0 - u0*v2) + p2.y*(u0*v1 - u1*v0)) / denom;
+
+        ctx.transform(a, b, c, d, e, f);
+        ctx.drawImage(img, 0, 0);
+
         ctx.restore();
     }
 
@@ -80,7 +106,16 @@ define(['canvas','textureManager','mapManager'], function(canvas, textureManager
         const block = map.mapData.blockMap[wy]?.[wx];
         if(!block) return;
         const texture = textureManager.getFloorTexture(block.floor.texture);
-        drawTexturedQuad(ctx, texture, pA,pB,pC,pD);
+        if (texture) {
+            const w = texture.width;
+            const h = texture.height;
+            drawTexturedQuadUV(ctx, texture, pA, pB, pC, pD,
+                {u:0, v:0},   // near-left
+                {u:w, v:0},   // near-right
+                {u:w, v:h},   // far-right
+                {u:0, v:h}    // far-left
+            );
+        }
     }
 
     function drawFrontWall(dx, dy, camera, ctx) {
@@ -91,7 +126,7 @@ define(['canvas','textureManager','mapManager'], function(canvas, textureManager
 
         const block = map.mapData.blockMap[wy]?.[wx];
         if (!block) return;
-
+        drawBlockOnMapDebugCanvas(block, '#49EA40');
         // ---- pick correct wall depending on camera ----
         let wall;
        switch (camera.dir) {
@@ -116,8 +151,15 @@ define(['canvas','textureManager','mapManager'], function(canvas, textureManager
 
         const pC = { x: pB.x, y: pB.y - height };
         const pD = { x: pA.x, y: pA.y - height };
-
-        drawTexturedQuad(ctx, texture, pA, pB, pC, pD);
+        const w = texture.width;
+        const h = texture.height;
+        //drawTexturedQuad(ctx, texture, pA, pB, pC, pD);
+        drawTexturedQuadUV(ctx, texture, pA, pB, pC, pD,
+            {u:0, v:h},   // bottom-left
+            {u:w, v:h},   // bottom-right
+            {u:w, v:0},   // top-right
+            {u:0, v:0}    // top-left
+        );
     }
 
     function drawLeftWall(dx, dy, camera, ctx) {
@@ -128,7 +170,7 @@ define(['canvas','textureManager','mapManager'], function(canvas, textureManager
 
         const block = map.mapData.blockMap[wy]?.[wx];
         if (!block) return;
-
+        drawBlockOnMapDebugCanvas(block, '#99D9EA');
         const walls = getWallSet(block, camera.dir);
         const wall = walls.left;
         if (!wall) return;
@@ -147,8 +189,24 @@ define(['canvas','textureManager','mapManager'], function(canvas, textureManager
 
         const pC = { x: pB.x, y: pB.y - heightB };
         const pD = { x: pA.x, y: pA.y - heightA };
+        //drawTexturedQuad(ctx, texture, pA, pB, pC, pD, false);
+        const w = texture.width;
+        const h = texture.height;
+        drawTexturedQuadUV(ctx, texture, pA, pB, pC, pD,
+            {u:0, v:h},   // near bottom
+            {u:w, v:h},   // far bottom
+            {u:w, v:0},   // far top
+            {u:0, v:0}    // near top
+        );
+    }
 
-        drawTexturedQuad(ctx, texture, pA, pB, pC, pD);
+    function drawBlockOnMapDebugCanvas(block, color) {
+        canvas.contextHolder.mapDebugContext.fillStyle = color;
+        /*canvas.contextHolder.mapDebugContext.fillRect(
+            block.x*3*2,
+            block.y*3*2,
+            3*2,
+            3*2);*/
     }
 
     function drawRightWall(dx, dy, camera, ctx) {
@@ -160,6 +218,7 @@ define(['canvas','textureManager','mapManager'], function(canvas, textureManager
         const block = map.mapData.blockMap[wy]?.[wx];
         if (!block) return;
 
+        drawBlockOnMapDebugCanvas(block, '#FFF200');
         const walls = getWallSet(block, camera.dir);
         const wall = walls.right;
         if (!wall) return;
@@ -177,8 +236,14 @@ define(['canvas','textureManager','mapManager'], function(canvas, textureManager
 
         const pC = { x: pB.x, y: pB.y - heightB };
         const pD = { x: pA.x, y: pA.y - heightA };
-
-        drawTexturedQuad(ctx, texture, pA, pB, pC, pD);
+        const w = texture.width;
+        const h = texture.height;
+        drawTexturedQuadUV(ctx, texture, pA, pB, pC, pD,
+            {u:w, v:h},   // near bottom
+            {u:0, v:h},   // far bottom
+            {u:0, v:0},   // far top
+            {u:w, v:0}    // near top
+        );
     }
 
     function getWallSet(block, dir) {
@@ -186,34 +251,41 @@ define(['canvas','textureManager','mapManager'], function(canvas, textureManager
             case 'NORTH':
                 return {
                     front: block.southWall,
-                    left:  block.eastWall,
-                    right: block.westWall
+                    //left:  block.eastWall,
+                    //right: block.westWall
+                    left:  block.westWall,
+                    right: block.eastWall
                 };
             case 'SOUTH':
                 return {
                     front: block.northWall,
-                    left:  block.westWall,
-                    right: block.eastWall
+                    //left:  block.westWall,
+                    //right: block.eastWall
+                    left:  block.eastWall,
+                    right: block.westWall
                 };
             case 'EAST':
                 return {
                     front: block.westWall,
-                    left:  block.southWall,
-                    right: block.northWall
+                    //left:  block.southWall,
+                    //right: block.northWall
+                    left:  block.northWall,
+                    right: block.southWall
                 };
             case 'WEST':
                 return {
                     front: block.eastWall,
-                    left:  block.northWall,
-                    right: block.southWall
+                    //left:  block.northWall,
+                    //right: block.southWall
+                    left:  block.southWall,
+                    right: block.northWall
                 };
         }
     }
 
-    function drawCurrentRow(camera, ctx) {
-
-        const dyVisual = 0.3;   // projection depth (stable)
-        const dyWorld  = 0;     // actual tile
+    function drawCurrentRowFloor(camera, ctx) {
+        const dyVisual = 0.3;
+        const dyWorld  = 0;
         const range = 6;
 
         for (let dx = -range; dx <= range; dx++) {
@@ -232,54 +304,202 @@ define(['canvas','textureManager','mapManager'], function(canvas, textureManager
             const block = map.mapData.blockMap[wy]?.[wx];
             if (!block) continue;
 
-            const walls = getWallSet(block, camera.dir);
-
-            // ---- LEFT WALL ----
-            if (walls.left) {
-                const tex = textureManager.getWallTexture(walls.left.texture);
-                if (tex) {
-
-                    const pL1 = project(dx - 0.5, dyVisual);
-                    const pL2 = project(dx - 0.5, dyVisual + 1);
-
-                    if (pL1 && pL2) {
-                        const h1 = PROJ.scale() / dyVisual;
-                        const h2 = PROJ.scale() / (dyVisual + 1);
-
-                        const pL3 = { x: pL2.x, y: pL2.y - h2 };
-                        const pL4 = { x: pL1.x, y: pL1.y - h1 };
-
-                        drawTexturedQuad(ctx, tex, pL1, pL2, pL3, pL4);
-                    }
-                }
-            }
-
-            // ---- RIGHT WALL ----
-            if (walls.right) {
-                const tex = textureManager.getWallTexture(walls.right.texture);
-                if (tex) {
-
-                    const pR1 = project(dx + 0.5, dyVisual);
-                    const pR2 = project(dx + 0.5, dyVisual + 1);
-
-                    if (pR1 && pR2) {
-                        const h1 = PROJ.scale() / dyVisual;
-                        const h2 = PROJ.scale() / (dyVisual + 1);
-
-                        const pR3 = { x: pR2.x, y: pR2.y - h2 };
-                        const pR4 = { x: pR1.x, y: pR1.y - h1 };
-
-                        drawTexturedQuad(ctx, tex, pR1, pR2, pR3, pR4);
-                    }
-                }
-            }
-
-            // ---- FLOOR (keep existing) ----
-            const texFloor = textureManager.getFloorTexture(block.floor.texture);
-            if (texFloor) {
-                drawTexturedQuad(ctx, texFloor, pA, pB, pC, pD);
+            const texture = textureManager.getFloorTexture(block.floor.texture);
+            if (texture) {
+                const w = texture.width;
+                const h = texture.height;
+                drawTexturedQuadUV(ctx, texture, pA, pB, pC, pD,
+                    {u:0, v:0},   // near-left
+                    {u:w, v:0},   // near-right
+                    {u:w, v:h},   // far-right
+                    {u:0, v:h}    // far-left
+                );
             }
         }
+    }
+
+    function drawCurrentRowWalls(camera, ctx) {
+        const dyVisual = 0.3;
+        const dyWorld  = 0;
+        const range = 6;
+
+        function drawCell(dx) {
+            const world = viewToWorld(dx, dyWorld, camera);
+            const wx = Math.floor(world.x);
+            const wy = Math.floor(world.y);
+
+            const block = map.mapData.blockMap[wy]?.[wx];
+            if (!block) return;
+
+            const walls = getWallSet(block, camera.dir);
+
+            // LEFT WALL
+            if (walls.left) {
+                const texture = textureManager.getWallTexture(walls.left.texture);
+                if (texture) {
+                    const pA = project(dx - 0.5, dyVisual);
+                    const pB = project(dx - 0.5, dyVisual + 1);
+                    if (pA && pB) {
+                        const h1 = PROJ.scale() / dyVisual;
+                        const h2 = PROJ.scale() / (dyVisual + 1);
+                        const pC = { x: pB.x, y: pB.y - h2 };
+                        const pD = { x: pA.x, y: pA.y - h1 };
+                        //drawTexturedQuad(ctx, texture, pA, pB, pC, pD, false);
+                                const w = texture.width;
+                                const h = texture.height;
+                                drawTexturedQuadUV(ctx, texture, pA, pB, pC, pD,
+                                    {u:0, v:h},   // near bottom
+                                    {u:w, v:h},   // far bottom
+                                    {u:w, v:0},   // far top
+                                    {u:0, v:0}    // near top
+                                );
+                    }
+                }
+            }
+
+            // RIGHT WALL
+            if (walls.right) {
+                const texture = textureManager.getWallTexture(walls.right.texture);
+                if (texture) {
+                    const pA = project(dx + 0.5, dyVisual);
+                    const pB = project(dx + 0.5, dyVisual + 1);
+                    if (pA && pB) {
+                        const h1 = PROJ.scale() / dyVisual;
+                        const h2 = PROJ.scale() / (dyVisual + 1);
+                        const pC = { x: pB.x, y: pB.y - h2 };
+                        const pD = { x: pA.x, y: pA.y - h1 };
+                        const w = texture.width;
+                        const h = texture.height;
+                        drawTexturedQuadUV(ctx, texture, pA, pB, pC, pD,
+                            {u:w, v:h},   // near bottom
+                            {u:0, v:h},   // far bottom
+                            {u:0, v:0},   // far top
+                            {u:w, v:0}    // near top
+                        );
+                    }
+                }
+            }
+            drawBlockOnMapDebugCanvas(block, '#EA4417');
+            if (dx == 0) drawBlockOnMapDebugCanvas(block, '#FF7F27');
+            // FRONT WALL
+            if (walls.front) {
+                const texture = textureManager.getWallTexture(walls.front.texture);
+                if (texture) {
+                    const pA = project(dx - 0.5, dyVisual);
+                    const pB = project(dx + 0.5, dyVisual);
+
+                    if (pA && pB) {
+                        const height = PROJ.scale() / dyVisual;
+
+                        const pC = { x: pB.x, y: pB.y - height };
+                        const pD = { x: pA.x, y: pA.y - height };
+
+                        //drawTexturedQuad(ctx, tex, pA, pB, pC, pD);
+                        const w = texture.width;
+                        const h = texture.height;
+                        //drawTexturedQuad(ctx, texture, pA, pB, pC, pD);
+                        drawTexturedQuadUV(ctx, texture, pA, pB, pC, pD,
+                            {u:0, v:h},   // bottom-left
+                            {u:w, v:h},   // bottom-right
+                            {u:w, v:0},   // top-right
+                            {u:0, v:0}    // top-left
+                        );
+                    }
+                }
+            }
+        }
+
+        function drawZeroCell(dx) {
+            const world = viewToWorld(dx, dyWorld, camera);
+            const wx = Math.floor(world.x);
+            const wy = Math.floor(world.y);
+
+            const block = map.mapData.blockMap[wy]?.[wx];
+            if (!block) return;
+
+            const walls = getWallSet(block, camera.dir);
+
+            // LEFT WALL
+            if (walls.left) {
+                const texture = textureManager.getWallTexture(walls.left.texture);
+                if (texture) {
+                    const pA = project(dx - 0.5, dyVisual);
+                    const pB = project(dx - 0.5, dyVisual + 1);
+                    if (pA && pB) {
+                        const h1 = PROJ.scale() / dyVisual;
+                        const h2 = PROJ.scale() / (dyVisual + 1);
+                        const pC = { x: pB.x, y: pB.y - h2 };
+                        const pD = { x: pA.x, y: pA.y - h1 };
+                        //drawTexturedQuad(ctx, texture, pA, pB, pC, pD, false);
+                        const w = texture.width;
+                        const h = texture.height;
+                        drawTexturedQuadUV(ctx, texture, pA, pB, pC, pD,
+                            {u:0, v:h},   // near bottom
+                            {u:w, v:h},   // far bottom
+                            {u:w, v:0},   // far top
+                            {u:0, v:0}    // near top
+                        );
+                    }
+                }
+            }
+
+            // RIGHT WALL
+            if (walls.right) {
+                const texture = textureManager.getWallTexture(walls.right.texture);
+                if (texture) {
+                    const pA = project(dx + 0.5, dyVisual);
+                    const pB = project(dx + 0.5, dyVisual + 1);
+                    if (p1 && p2) {
+                        const h1 = PROJ.scale() / dyVisual;
+                        const h2 = PROJ.scale() / (dyVisual + 1);
+                        const pC = { x: pB.x, y: pB.y - h2 };
+                        const pD = { x: pA.x, y: pA.y - h1 };
+                        const w = texture.width;
+                        const h = texture.height;
+                        drawTexturedQuadUV(ctx, texture, pA, pB, pC, pD,
+                            {u:w, v:h},   // near bottom
+                            {u:0, v:h},   // far bottom
+                            {u:0, v:0},   // far top
+                            {u:w, v:0}    // near top
+                        );
+                    }
+                }
+            }
+            drawBlockOnMapDebugCanvas(block, '#EA4417');
+            if (dx == 0) drawBlockOnMapDebugCanvas(block, '#FF7F27');
+            // FRONT WALL
+            if (walls.front) {
+                const texture = textureManager.getWallTexture(walls.front.texture);
+                if (texture) {
+                    const pA = project(dx - 0.5, dyVisual);
+                    const pB = project(dx + 0.5, dyVisual);
+
+                    if (pA && pB) {
+                        const height = PROJ.scale() / dyVisual;
+
+                        const pC = { x: pB.x, y: pB.y - height };
+                        const pD = { x: pA.x, y: pA.y - height };
+
+                        //drawTexturedQuad(ctx, tex, pA, pB, pC, pD);
+                        const w = texture.width;
+                        const h = texture.height;
+                        //drawTexturedQuad(ctx, texture, pA, pB, pC, pD);
+                        drawTexturedQuadUV(ctx, texture, pA, pB, pC, pD,
+                            {u:0, v:h},   // bottom-left
+                            {u:w, v:h},   // bottom-right
+                            {u:w, v:0},   // top-right
+                            {u:0, v:0}    // top-left
+                        );
+                    }
+                }
+            }
+        }
+
+        // 🔥 correct painter order
+        for (let dx = -range; dx < 0; dx++) drawCell(dx);
+        for (let dx = range; dx > 0; dx--) drawCell(dx);
+
+        drawZeroCell(0);
     }
 
     const renderer = {
@@ -303,25 +523,29 @@ define(['canvas','textureManager','mapManager'], function(canvas, textureManager
             PROJ.yOffset = testProj ? (PROJ.horizonY()-testProj.y) : 0;
 
            for (let dy = MAX_DEPTH; dy >= NEAR; dy--) {
-
-               const range = Math.min(20, Math.ceil(6 * (dy / NEAR)));
-
+               const range = Math.min(10, Math.ceil(6 * (dy / NEAR)));
                for (let dx = -range; dx <= range; dx++) {
                    // 🟫 then floor
                    drawFloorTile(dx, dy, camera, ctx);
-                   // 🧱 side walls FIRST
-                   drawLeftWall(dx, dy, camera, ctx);
-                   drawRightWall(dx, dy, camera, ctx);
-
-                   // 🧱 then front wall
-                   drawFrontWall(dx, dy, camera, ctx);
-
-
                }
            }
+           drawCurrentRowFloor(camera, ctx);
 
-            // draw current row
-            drawCurrentRow(camera, ctx);
+           for (let dy = MAX_DEPTH; dy >= NEAR; dy--) {
+            const range = Math.min(10, Math.ceil(6 * (dy / NEAR)));
+                 for (let dx = -range; dx < 0; dx++) {
+                      drawLeftWall(dx, dy, camera, ctx);
+                      drawRightWall(dx, dy, camera, ctx);
+                      drawFrontWall(dx, dy, camera, ctx);
+                  }
+                  for (let dx = range; dx >= 0; dx--) {
+                      drawLeftWall(dx, dy, camera, ctx);
+                      drawRightWall(dx, dy, camera, ctx);
+                      drawFrontWall(dx, dy, camera, ctx);
+                  }
+           }
+            drawCurrentRowWalls(camera, ctx);
+
         },
         settings: RENDER_SETTINGS
     };

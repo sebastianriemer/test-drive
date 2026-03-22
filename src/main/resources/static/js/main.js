@@ -1,18 +1,22 @@
 require.config({
 });
 
-require(['canvas', 'gameState', 'gameModeManager', 'mainWindow', 'runeTable',
-        'partyBar', 'textWindow', 'dashBoard',
+require(['canvas', 'gameState', 'gameModeManager',
+        'mainWindow', 'runeTableWindow', 'partyBar', 'textWindow', 'interplayWindow',
+        'dashBoard',
         'audioLoader', 'audioManager', 'menu', 'controls', 'mapManager', 'regionalWorldDrawingEngine2'],
-    function (canvas, gameState, gameModeManager, mainWindow, runeTable,
-        partyBar, textWindow, dashBoard,
+    function (canvas, gameState, gameModeManager,
+        mainWindow, runeTableWindow, partyBar, textWindow, interplayWindow,
+        dashBoard,
         audioLoader, audioManager, menu, controls, mapManager, regionalWorldDrawingEngine2) {
         console.log('main: begin');
 
         function bindSlider(id, key) {
             const slider = document.getElementById(id);
-            const label = document.getElementById(id.replace("Slider", "Value"));
+            slider.value = regionalWorldDrawingEngine2.settings[key];
 
+            const label = document.getElementById(id.replace("Slider", "Value"));
+            label.textContent = regionalWorldDrawingEngine2.settings[key];
             slider.addEventListener("input", () => {
                 regionalWorldDrawingEngine2.settings[key] = parseFloat(slider.value);
                 label.textContent = slider.value;
@@ -21,7 +25,7 @@ require(['canvas', 'gameState', 'gameModeManager', 'mainWindow', 'runeTable',
 
         function bindCheckbox(id, key) {
             const checkBox = document.getElementById(id);
-
+            if (regionalWorldDrawingEngine2.settings[key]) checkBox.checked;
             checkBox.addEventListener("change", () => {
                 regionalWorldDrawingEngine2.settings[key] = checkBox.checked;
             });
@@ -62,9 +66,9 @@ require(['canvas', 'gameState', 'gameModeManager', 'mainWindow', 'runeTable',
         }
 
         function draw() {
-            dashBoard.draw();
-            runeTable.draw();
-
+            //dashBoard.draw();
+            runeTableWindow.draw();
+            interplayWindow.draw();
             textWindow.draw();
             //gameState.draw();
             // mainWindow.draw();
@@ -111,26 +115,26 @@ require(['canvas', 'gameState', 'gameModeManager', 'mainWindow', 'runeTable',
 
         function drawDebugMap() {
             if (mapManager.regionalMap.mapImage) {
-                canvas.contextHolder.mapDebugContext.drawImage(mapManager.regionalMap.mapImage, 0, 0, 69*4, 69*4);
+                canvas.contextHolder.mapDebugContext.drawImage(mapManager.regionalMap.mapImage, 0, 0, 69*2, 69*2);
                 drawPartyPositionOnMap(canvas.contextHolder.mapDebugContext);
             }
         }
 
         function drawDebugBattleMap() {
             if (mapManager.battleMap.mapImage) {
-                canvas.contextHolder.mapDebugContext2.drawImage(mapManager.battleMap.mapImage, 0, 0, 69*4, 69*4);
+                canvas.contextHolder.mapDebugContext2.drawImage(mapManager.battleMap.mapImage, 0, 0, 69*2, 69*2);
                 drawPartyPositionOnMap(canvas.contextHolder.mapDebugContext2);
             }
         }
 
         function drawPartyPositionOnMap(mapDebugContext) {
-                mapDebugContext.fillStyle = '#E200BD';
-                mapDebugContext.fillRect(
-                    mapManager.regionalMap.partyPosition.x*3*4,
-                    mapManager.regionalMap.partyPosition.y*3*4,
-                    3*4,
-                    3*4);
-            }
+            mapDebugContext.fillStyle = '#E200BD';
+            mapDebugContext.fillRect(
+                mapManager.regionalMap.partyPosition.x*3*2,
+                mapManager.regionalMap.partyPosition.y*3*2,
+                3*2,
+                3*2);
+        }
     }
 
 
