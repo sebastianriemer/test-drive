@@ -23,7 +23,7 @@ define(['canvas', 'layout'], function (canvas, layout) {
 
     function drawEmpty() {
        const r = layout.LAYOUT.textWindow;
-       let runeWindowColor = Math.random() > 0.5? '#dfe0ff' : '#eff0ff';
+       let runeWindowColor = Math.random() > 0.5? '#dfe0ff' : '#dfe0ff';
        canvas.contextHolder.context.fillStyle = runeWindowColor;
        canvas.contextHolder.context.fillRect(
            r.x, r.y, r.width, r.height

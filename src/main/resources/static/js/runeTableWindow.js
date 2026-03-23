@@ -5,7 +5,7 @@ define(['canvas', 'layout'], function (canvas, layout) {
         this.draw = function() {
             const r = layout.LAYOUT.runeTableWindow;
             withClipping(canvas.contextHolder.context, r, () => {
-                let runeWindowColor = Math.random() > 0.5? '#dfe0ff' : '#eff0ff';
+                let runeWindowColor = Math.random() > 0.5? '#dfe0ff' : '#dfe0ff';
                 canvas.contextHolder.context.fillStyle = runeWindowColor;
                 canvas.contextHolder.context.fillRect(
                     r.x, r.y, r.width, r.height

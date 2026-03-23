@@ -4,35 +4,36 @@ require.config({
 require(['canvas', 'gameState', 'gameModeManager',
         'mainWindow', 'runeTableWindow', 'partyBar', 'textWindow', 'interplayWindow',
         'dashBoard',
-        'audioLoader', 'audioManager', 'menu', 'controls', 'mapManager', 'regionalWorldDrawingEngine2'],
+        'audioLoader', 'audioManager', 'menu', 'controls', 'mapManager', 'renderer'],
     function (canvas, gameState, gameModeManager,
         mainWindow, runeTableWindow, partyBar, textWindow, interplayWindow,
         dashBoard,
-        audioLoader, audioManager, menu, controls, mapManager, regionalWorldDrawingEngine2) {
+        audioLoader, audioManager, menu, controls, mapManager, renderer) {
         console.log('main: begin');
 
+        //renderer.setMode(renderer.modes.GRID);
         function bindSlider(id, key) {
             const slider = document.getElementById(id);
-            slider.value = regionalWorldDrawingEngine2.settings[key];
+            slider.value = renderer.settings[key];
 
             const label = document.getElementById(id.replace("Slider", "Value"));
-            label.textContent = regionalWorldDrawingEngine2.settings[key];
+            label.textContent = renderer.settings[key];
             slider.addEventListener("input", () => {
-                regionalWorldDrawingEngine2.settings[key] = parseFloat(slider.value);
+                renderer.settings[key] = parseFloat(slider.value);
                 label.textContent = slider.value;
             });
         }
 
         function bindCheckbox(id, key) {
             const checkBox = document.getElementById(id);
-            if (regionalWorldDrawingEngine2.settings[key]) checkBox.checked;
+            if (renderer.settings[key]) checkBox.checked;
             checkBox.addEventListener("change", () => {
-                regionalWorldDrawingEngine2.settings[key] = checkBox.checked;
+                renderer.settings[key] = checkBox.checked;
             });
         }
 
         function initGame(){
-            mainWindow.setRenderer(regionalWorldDrawingEngine2);
+            mainWindow.setRenderer(renderer);
             console.log('main.init()...');
             menu.init();
             canvas.initCanvas();
@@ -54,6 +55,7 @@ require(['canvas', 'gameState', 'gameModeManager',
             bindSlider("depthSlider", "maxDepth");
             bindSlider("widthSlider", "width");
             bindCheckbox("imageSoothingCheckbox", "imageSmoothingEnabled");
+            bindCheckbox("gridModeCheckbox", "gridModeEnabled");
             gameState.load().then(() => {
                 console.log('Game state loaded successfully!');
                 startRenderingLoop();

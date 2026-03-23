@@ -21,7 +21,7 @@ define(['canvas'], function (canvas) {
             return false;
         }
         this.draw = function() {
-            let dashBoardColor = Math.random() > 0.5? '#ae6447' : '#af6548';
+            let dashBoardColor = Math.random() > 0.5? '#ae6447' : '#ae6447';
             // oberer Rand
             canvas.contextHolder.context.fillStyle = dashBoardColor;
             canvas.contextHolder.context.fillRect(0, 0, 640, 10);
