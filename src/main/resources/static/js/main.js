@@ -4,33 +4,12 @@ require.config({
 require(['canvas', 'gameState', 'gameModeManager',
         'mainWindow', 'runeTableWindow', 'partyBar', 'textWindow', 'interplayWindow',
         'dashBoard',
-        'audioLoader', 'audioManager', 'menu', 'controls', 'mapManager', 'renderer'],
+        'audioLoader', 'audioManager', 'menu', 'controls', 'mapManager', 'renderer', 'rendererUI'],
     function (canvas, gameState, gameModeManager,
         mainWindow, runeTableWindow, partyBar, textWindow, interplayWindow,
         dashBoard,
-        audioLoader, audioManager, menu, controls, mapManager, renderer) {
+        audioLoader, audioManager, menu, controls, mapManager, renderer, rendererUI) {
         console.log('main: begin');
-
-        //renderer.setMode(renderer.modes.GRID);
-        function bindSlider(id, key) {
-            const slider = document.getElementById(id);
-            slider.value = renderer.settings[key];
-
-            const label = document.getElementById(id.replace("Slider", "Value"));
-            label.textContent = renderer.settings[key];
-            slider.addEventListener("input", () => {
-                renderer.settings[key] = parseFloat(slider.value);
-                label.textContent = slider.value;
-            });
-        }
-
-        function bindCheckbox(id, key) {
-            const checkBox = document.getElementById(id);
-            if (renderer.settings[key]) checkBox.checked;
-            checkBox.addEventListener("change", () => {
-                renderer.settings[key] = checkBox.checked;
-            });
-        }
 
         function initGame(){
             mainWindow.setRenderer(renderer);
@@ -44,18 +23,8 @@ require(['canvas', 'gameState', 'gameModeManager',
             console.log('dashBoard inside');
             console.log(dashBoard);
             dashBoard.load();
+            rendererUI.init(renderer);
 
-
-
-            // bind all
-            bindSlider("scaleSlider", "scale");
-            bindSlider("horizonSlider", "horizonY");
-            bindSlider("stretchSlider", "stretch");
-            bindSlider("nearSlider", "near");
-            bindSlider("depthSlider", "maxDepth");
-            bindSlider("widthSlider", "width");
-            bindCheckbox("imageSoothingCheckbox", "imageSmoothingEnabled");
-            bindCheckbox("gridModeCheckbox", "gridModeEnabled");
             gameState.load().then(() => {
                 console.log('Game state loaded successfully!');
                 startRenderingLoop();
@@ -138,6 +107,5 @@ require(['canvas', 'gameState', 'gameModeManager',
                 3*2);
         }
     }
-
 
 );

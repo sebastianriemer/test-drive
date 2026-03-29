@@ -2,24 +2,28 @@ package at.riemer.sebastian.TestDrive.model.map;
 
 import at.riemer.sebastian.TestDrive.service.StreetNameLookupService;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.IOException;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class RegionalMap {
+
+    private static final Logger logger = LoggerFactory.getLogger(RegionalMap.class);
+
     private List<List<Block>> blockMap = new ArrayList<>();
     private String mapFilename;
-    private Map<String, Texture> wallTextureMap = new HashMap<>();
+    private Map<Integer, List<Texture>> wallTextureSets = new TreeMap<>();
     private Map<String, Texture> floorTextureMap = new HashMap<>();
     private Map<String, Texture> roomTextureMap = new HashMap<>();
 
     public RegionalMap(String mapFilename,
-                       BufferedImage textureMapAsImage,
+                       BufferedImage mapAsImage,
                        BufferedImage streetMapAsImage,
                        BufferedImage floorMapAsImage,
                        Resource[] wallResources,
@@ -27,20 +31,22 @@ public class RegionalMap {
                        Resource[] roomResources
     ) {
         this.mapFilename = mapFilename;
-        initBlockMap(textureMapAsImage, floorMapAsImage, streetMapAsImage);
-        initWallTextureMap(wallResources);
+        initBlockMap(mapAsImage, floorMapAsImage, streetMapAsImage);
+        initWallTextureSets(wallResources);
         initFloorTextureMap(floorResources);
         initRoomTextureMap(roomResources);
 
     }
 
-    private void initBlockMap(BufferedImage textureMapAsImage, BufferedImage floorMapAsImage, BufferedImage streetMapAsImage) {
+    private void initBlockMap(BufferedImage mapAsImage,
+                              BufferedImage floorMapAsImage,
+                              BufferedImage streetMapAsImage) {
         StreetNameLookupService streetNameLookupService = new StreetNameLookupService();
 
-        for (int y = 0; y < textureMapAsImage.getHeight() / 3; y++) {
+        for (int y = 0; y < mapAsImage.getHeight() / 3; y++) {
             List<Block> row = new ArrayList<>();
             blockMap.add(row);
-            for (int x = 0; x < textureMapAsImage.getWidth() / 3; x++) {
+            for (int x = 0; x < mapAsImage.getWidth() / 3; x++) {
                 // String centerHex = getImagePixelAsHexString(textureMapAsImage, x * 3 + 1, y * 3 + 1);
                 String floor = getImagePixelAsHexString(floorMapAsImage, x * 3 + 1, y * 3 + 1);
                 String ceiling = "ffffff"; // no ceilingMap exists yet; could be of interest later on, as in underground
@@ -48,10 +54,10 @@ public class RegionalMap {
                 String centerHexOnStreetMap = getImagePixelAsHexString(streetMapAsImage, x * 3 + 1, y * 3 + 1);
                 Block block = new Block(x,
                         y,
-                        getImagePixelAsHexString(textureMapAsImage, x * 3 + 1, y * 3),
-                        getImagePixelAsHexString(textureMapAsImage, x * 3 + 2, y * 3 + 1),
-                        getImagePixelAsHexString(textureMapAsImage, x * 3 + 1, y * 3 + 2),
-                        getImagePixelAsHexString(textureMapAsImage, x * 3, y * 3 + 1),
+                        getImagePixelAsHexString(mapAsImage, x * 3 + 1, y * 3),
+                        getImagePixelAsHexString(mapAsImage, x * 3 + 2, y * 3 + 1),
+                        getImagePixelAsHexString(mapAsImage, x * 3 + 1, y * 3 + 2),
+                        getImagePixelAsHexString(mapAsImage, x * 3, y * 3 + 1),
                         floor,
                         ceiling,
                         streetNameLookupService.getStreetName(centerHexOnStreetMap)
@@ -61,14 +67,65 @@ public class RegionalMap {
         }
     }
 
-    private void initWallTextureMap(Resource[] wallResources) {
-        for (int i = 0; i < wallResources.length; i++) {
-            this.wallTextureMap.put(
-                    FilenameUtils.removeExtension(wallResources[i].getFilename()),
-                    new Texture("img/walls/" + wallResources[i].getFilename())
-            );
+    public void applyWallTextures(List<WallTextureDTO> textures) {
+
+        for (WallTextureDTO dto : textures) {
+
+            Block block = blockMap.get(dto.getY()).get(dto.getX());
+
+            if (dto.getNorth() != null)
+                block.getNorthWall().setTexture(dto.getNorth().getSet(), dto.getNorth().getIndex());
+
+            if (dto.getEast() != null)
+                block.getEastWall().setTexture(dto.getEast().getSet(), dto.getEast().getIndex());
+
+            if (dto.getSouth() != null)
+                block.getSouthWall().setTexture(dto.getSouth().getSet(), dto.getSouth().getIndex());
+
+            if (dto.getWest() != null)
+                block.getWestWall().setTexture(dto.getWest().getSet(), dto.getWest().getIndex());
         }
     }
+
+//    private void initWallTextureMap(Resource[] wallResources) {
+//        for (int i = 0; i < wallResources.length; i++) {
+//            this.wallTextureMap.put(
+//                    FilenameUtils.removeExtension(wallResources[i].getFilename()),
+//                    new Texture("img/walls/" + wallResources[i].getFilename())
+//            );
+//        }
+//    }
+
+    private void initWallTextureSets(Resource[] wallResources) {
+        Map<Integer, List<Texture>> sets = new TreeMap<>();
+
+        for (Resource res : wallResources) {
+            try {
+                String path = res.getURL().getPath();
+                // example: /static/img/walls/1/0.png
+                String[] parts = path.split("/img/walls/")[1].split("/");
+                int setId = Integer.parseInt(parts[0]);
+                String fileName = parts[1];
+
+                sets.putIfAbsent(setId, new ArrayList<>());
+
+                logger.debug("Adding texture for set " + setId + ": " + fileName);
+                sets.get(setId).add(
+                        new Texture("img/walls/" + setId + "/" + fileName)
+                );
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+        for (List<Texture> list : sets.values()) {
+            list.sort(Comparator.comparing(Texture::getFileName));
+        }
+
+        this.wallTextureSets = sets;
+    }
+
+
     private void initFloorTextureMap(Resource[] floorResources) {
         for (int i = 0; i < floorResources.length; i++) {
             this.floorTextureMap.put(
@@ -112,9 +169,6 @@ public class RegionalMap {
     }
 
 
-    public Map<String, Texture> getWallTextureMap() {
-        return wallTextureMap;
-    }
 
     public Map<String, Texture> getRoomTextureMap() {
         return roomTextureMap;
@@ -122,5 +176,9 @@ public class RegionalMap {
 
     public Map<String, Texture> getFloorTextureMap() {
         return floorTextureMap;
+    }
+
+    public Map<Integer, List<Texture>> getWallTextureSets() {
+        return wallTextureSets;
     }
 }

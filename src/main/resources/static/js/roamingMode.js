@@ -1,4 +1,6 @@
-define(['eventBus', 'gameState', 'navigation'], function (eventBus, gameState, navigation) {
+define(['eventBus', 'gameState', 'navigation', 'textureEditor'],
+    function (eventBus, gameState, navigation, textureEditor) {
+
     const RoamingMode = function () {
         this.name = 'RoamingMode';
 
@@ -7,22 +9,14 @@ define(['eventBus', 'gameState', 'navigation'], function (eventBus, gameState, n
         };
 
        this.handleInput = function(data) {
+           if (data.key === "ArrowUp") navigation.moveForward();
+           if (data.key === "ArrowLeft") navigation.turnLeft();
+           if (data.key === "ArrowRight") navigation.turnRight();
+           if (data.key === "ArrowDown") navigation.moveBackward();
 
-           if (data.key === "ArrowUp") {
-               navigation.moveForward();
-           }
-
-           if (data.key === "ArrowLeft") {
-               navigation.turnLeft();
-           }
-
-           if (data.key === "ArrowRight") {
-               navigation.turnRight();
-           }
-
-           if (data.key === "ArrowDown") {
-               navigation.moveBackward();
-           }
+            if (["1","2","3","4","5"].includes(data.key)) {
+                textureEditor.applyTexture(parseInt(data.key));
+            }
 
        };
         this.getTextForBelowMainWindow = function() {

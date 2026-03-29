@@ -49,7 +49,7 @@ define([], function() {
         }
 
         // same correct ordering as normal rows
-        for (let dx = -range; dx <= 0; dx++) {
+        for (let dx = -range; dx < 0; dx++) {
             drawNearLeft(dx, near, camera, ctx, renderQuad);
             drawNearRight(dx, near, camera, ctx, renderQuad);
             drawNearFront(dx, near, camera, ctx, renderQuad);
@@ -60,6 +60,7 @@ define([], function() {
             drawNearRight(dx, near, camera, ctx, renderQuad);
             drawNearFront(dx, near, camera, ctx, renderQuad);
         }
+        drawNearFront(0, near, camera, ctx, renderQuad);
     }
 
     function drawScene(params) {

@@ -42,6 +42,21 @@ define([], function () {
            this.getBlockFromBattleMap = function() {
                return this.battleMap.mapData.blockMap[this.regionalMap.partyPosition.y][this.regionalMap.partyPosition.x];
            }
+
+           this.getInvertedDirection = function(direction) {
+               switch (direction) {
+                 case 'NORTH':
+                   return 'SOUTH';
+                 case 'EAST':
+                   return 'WEST';
+                 case 'SOUTH':
+                   return 'NORTH';
+                 case 'WEST':
+                   return 'EAST';
+                 default:
+                   console.error(`Invalid direction! direction:'${direction}'`);
+               }
+           }
     }
     return new MapManager();
 

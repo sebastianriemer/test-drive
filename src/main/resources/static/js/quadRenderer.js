@@ -97,11 +97,44 @@ define([], function () {
         };
     }
 
-    function uvFloor(w, h) {
-        return {
-            A:{u:0,v:0}, B:{u:w,v:0}, C:{u:w,v:h}, D:{u:0,v:h}
-        };
+    function uvFloor(w, h, camera) {
+        switch (camera.direction) {
+
+            case 'NORTH': // 0°
+                return {
+                    A:{u:0,v:0},
+                    B:{u:w,v:0},
+                    C:{u:w,v:h},
+                    D:{u:0,v:h}
+                };
+
+            case 'EAST': // 90° clockwise
+                return {
+                    A:{u:0,v:h},
+                    B:{u:0,v:0},
+                    C:{u:w,v:0},
+                    D:{u:w,v:h}
+                };
+
+            case 'SOUTH': // 180°
+                return {
+                    A:{u:w,v:h},
+                    B:{u:0,v:h},
+                    C:{u:0,v:0},
+                    D:{u:w,v:0}
+                };
+
+            case 'WEST': // 270° clockwise
+                return {
+                    A:{u:w,v:0},
+                    B:{u:w,v:h},
+                    C:{u:0,v:h},
+                    D:{u:0,v:0}
+                };
+        }
     }
+
+
 
     return { drawQuad, drawQuadGrid, uvFront, uvLeft, uvRight, uvFloor };
 });

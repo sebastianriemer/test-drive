@@ -5,7 +5,7 @@ define([
     'projection',
     'quadRenderer',
     'renderOrder'
-], function(canvas, textureManager, mapManager, projectionModule, quadRenderer,renderOrder){
+], function(canvas, textureManager, mapManager, projection, quadRenderer,renderOrder){
 
     const map = mapManager.regionalMap;
 
@@ -27,8 +27,8 @@ define([
 
     let currentMode = RENDER_MODES.GRID;
 
-    const { PROJ, project, projectRaw, viewToWorld, getWall } =
-        projectionModule.createProjection(RENDER_SETTINGS);
+    const { PROJ, project, projectRaw } =
+        projection.createProjection(RENDER_SETTINGS);
 
     const { drawQuad, drawQuadGrid, uvFront, uvLeft, uvRight, uvFloor } = quadRenderer;
 
@@ -39,7 +39,7 @@ define([
     }
 
     function getBlock(dx, dy, camera) {
-        const world = viewToWorld(dx, dy, camera);
+        const world = projection.viewToWorld(dx, dy, camera);
         const wx = Math.floor(world.x);
         const wy = Math.floor(world.y);
         return map.mapData.blockMap[wy]?.[wx];
@@ -76,23 +76,41 @@ define([
         if (!pA || !pB || !pC || !pD) return;
 
         renderQuad(ctx, tex, pA,pB,pC,pD,
-            tex ? uvFloor(tex.width, tex.height) : null);
+            tex ? uvFloor(tex.width, tex.height, camera) : null);
+
+    }
+
+    function getWallTextureRef(wall) {
+        if (wall.textureSet == null || wall.textureIndex == null) {
+            return null;
+        }
+
+        return {
+            set: wall.textureSet,
+            index: wall.textureIndex
+        };
+    }
+    function getWallTextureWithFallback(wall) {
+        let tex = textureManager.getWallTexture(getWallTextureRef(wall));
+        if (!tex && currentMode === RENDER_MODES.TEXTURED) {
+            if (wall.solid) {
+                tex = textureManager.getWallTexture({ set: 9, index: 0 });
+            } else {
+                return;
+            }
+        }
+        return tex;
     }
 
     function drawFront(dx, dy, camera, ctx, renderQuad) {
         const block = getBlock(dx, dy, camera);
         if (!block) return;
 
-        const wall = getWall(block, camera, 'FRONT');
+        const wall = projection.getWall(block, camera, 'FRONT');
         if (!wall) return;
-        canvas.contextHolder.mapDebugContext.fillStyle = '#FFF200';
-        canvas.contextHolder.mapDebugContext.fillRect(
-                block.x*3*2,
-                block.y*3*2,
-                3*2,
-                3*2);
-        const tex = textureManager.getWallTexture(wall.texture);
-        if (!tex && currentMode === RENDER_MODES.TEXTURED) return;
+
+        let tex = getWallTextureWithFallback(wall);
+        if (!tex) return;
 
         const pA = project(dx-0.5, dy);
         const pB = project(dx+0.5, dy);
@@ -103,24 +121,22 @@ define([
         const pC = { x: pB.x, y: pB.y - h };
         const pD = { x: pA.x, y: pA.y - h };
 
-        renderQuad(ctx, tex, pA,pB,pC,pD,
-            tex ? uvFront(tex.width, tex.height) : null);
+        renderQuad(
+            ctx,
+            tex,
+            pA, pB, pC, pD,
+            tex ? uvFront(tex.width, tex.height) : null
+        );
     }
 
     function drawLeft(dx, dy, camera, ctx, renderQuad) {
         const block = getBlock(dx, dy, camera);
         if (!block) return;
 
-        const wall = getWall(block, camera, 'LEFT');
+        const wall = projection.getWall(block, camera, 'LEFT');
         if (!wall) return;
-        canvas.contextHolder.mapDebugContext.fillStyle = '#DDF2DD';
-        canvas.contextHolder.mapDebugContext.fillRect(
-                block.x*3*2,
-                block.y*3*2,
-                3*2,
-                3*2);
-        const tex = textureManager.getWallTexture(wall.texture);
-        if (!tex && currentMode === RENDER_MODES.TEXTURED) return;
+        let tex = getWallTextureWithFallback(wall);
+        if (!tex) return;
 
         const quad = buildWallQuad(dx-0.5, dy, dy+1);
         if (!quad) return;
@@ -133,16 +149,10 @@ define([
         const block = getBlock(dx, dy, camera);
         if (!block) return;
 
-        const wall = getWall(block, camera, 'RIGHT');
+        const wall = projection.getWall(block, camera, 'RIGHT');
         if (!wall) return;
-        canvas.contextHolder.mapDebugContext.fillStyle = '#AAAA00';
-        canvas.contextHolder.mapDebugContext.fillRect(
-                block.x*3*2,
-                block.y*3*2,
-                3*2,
-                3*2);
-        const tex = textureManager.getWallTexture(wall.texture);
-        if (!tex && currentMode === RENDER_MODES.TEXTURED) return;
+        let tex = getWallTextureWithFallback(wall);
+        if (!tex) return;
 
         const quad = buildWallQuad(dx+0.5, dy, dy+1);
         if (!quad) return;
@@ -166,23 +176,18 @@ define([
         if (!pA || !pB || !pC || !pD) return;
 
         renderQuad(ctx, tex, pA, pB, pC, pD,
-            tex ? uvFloor(tex.width, tex.height) : null);
+            tex ? uvFloor(tex.width, tex.height, camera) : null);
+
     }
 
     function drawNearFront(dx, near, camera, ctx, renderQuad) {
         const block = getBlock(dx, 0, camera);
         if (!block) return;
 
-        const wall = getWall(block, camera, 'FRONT');
+        const wall = projection.getWall(block, camera, 'FRONT');
         if (!wall) return;
-        canvas.contextHolder.mapDebugContext.fillStyle = '#FFAA00';
-        canvas.contextHolder.mapDebugContext.fillRect(
-                block.x*3*2,
-                block.y*3*2,
-                3*2,
-                3*2);
-        const tex = textureManager.getWallTexture(wall.texture);
-        if (!tex && currentMode === RENDER_MODES.TEXTURED) return;
+        let tex = getWallTextureWithFallback(wall);
+        if (!tex) return;
 
         const pA = project(dx-0.5, near);
         const pB = project(dx+0.5, near);
@@ -202,16 +207,10 @@ define([
         const block = getBlock(dx, 0, camera);
         if (!block) return;
 
-        const wall = getWall(block, camera, 'LEFT');
+        const wall = projection.getWall(block, camera, 'LEFT');
         if (!wall) return;
-        canvas.contextHolder.mapDebugContext.fillStyle = '#AAF200';
-        canvas.contextHolder.mapDebugContext.fillRect(
-                block.x*3*2,
-                block.y*3*2,
-                3*2,
-                3*2);
-        const tex = textureManager.getWallTexture(wall.texture);
-        if (!tex && currentMode === RENDER_MODES.TEXTURED) return;
+        let tex = getWallTextureWithFallback(wall);
+        if (!tex) return;
 
         const quad = buildWallQuad(dx-0.5, near, 1);
         if (!quad) return;
@@ -224,16 +223,10 @@ define([
         const block = getBlock(dx, 0, camera);
         if (!block) return;
 
-        const wall = getWall(block, camera, 'RIGHT');
+        const wall = projection.getWall(block, camera, 'RIGHT');
         if (!wall) return;
-        canvas.contextHolder.mapDebugContext.fillStyle = '#CCF200';
-        canvas.contextHolder.mapDebugContext.fillRect(
-                block.x*3*2,
-                block.y*3*2,
-                3*2,
-                3*2);
-        const tex = textureManager.getWallTexture(wall.texture);
-        if (!tex && currentMode === RENDER_MODES.TEXTURED) return;
+        let tex = getWallTextureWithFallback(wall);
+        if (!tex) return;
 
         const quad = buildWallQuad(dx+0.5, near, 1);
         if (!quad) return;
@@ -249,7 +242,7 @@ define([
             const camera = {
                 x: map.partyPosition.x,
                 y: map.partyPosition.y,
-                dir: map.partyPosition.direction
+                direction: map.partyPosition.direction
             };
 
             const renderQuad = getRenderQuad();

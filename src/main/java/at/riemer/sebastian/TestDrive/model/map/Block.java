@@ -26,25 +26,30 @@ public class Block {
     ) {
         this.x = x;
         this.y = y;
-        this.northWall = new Wall(northWall);
-        this.eastWall = new Wall(eastWall);
-        this.southWall = new Wall(southWall);
-        this.westWall = new Wall(westWall);
+        this.northWall = new Wall(isWall(northWall));
+        this.eastWall  = new Wall(isWall(eastWall));
+        this.southWall = new Wall(isWall(southWall));
+        this.westWall  = new Wall(isWall(westWall));
         this.floor = new Floor(floor);
         this.ceiling = new Ceiling(ceiling);
         // this.center = center;
         this.streetName = streetName;
-        this.hasNoWalls = surroundedByWhiteWalls();
+        this.hasNoWalls = surroundedByNoWalls();
 
 
     }
 
-    public boolean surroundedByWhiteWalls() {
+
+    private boolean isWall(String hex) {
+        return !hex.equals("ffffff"); // white = no wall
+    }
+
+    public boolean surroundedByNoWalls() {
         return
-            northWall.getTexture().equals("ffffff") &&
-            eastWall.getTexture().equals("ffffff") &&
-            southWall.getTexture().equals("ffffff") &&
-            westWall.getTexture().equals("ffffff");
+            !northWall.isSolid() &&
+            !eastWall.isSolid() &&
+            !southWall.isSolid() &&
+            !westWall.isSolid();
     }
 
     public int getX() {

@@ -5,7 +5,7 @@ mapManager, partyManager) {
 
         this.getUpcomingWallForDirection = function(direction, movement) {
             if (movement != 'FORWARD') {
-                direction = getInvertedDirection(direction);
+                direction = mapManager.getInvertedDirection(direction);
             }
             switch (direction) {
               case 'NORTH':
@@ -46,13 +46,13 @@ mapManager, partyManager) {
         }
 
         this.invertDirection = function() {
-            mapManager.regionalMap.partyPosition.direction = getInvertedDirection(mapManager.regionalMap.partyPosition.direction);
+            mapManager.regionalMap.partyPosition.direction = mapManager.getInvertedDirection(mapManager.regionalMap.partyPosition.direction);
         }
 
 
         this.setNewPartyPositionAccordingToDirection = function(direction, movement) {
             if (movement != 'FORWARD') {
-                direction = getInvertedDirection(direction);
+                direction = mapManager.getInvertedDirection(direction);
             }
             switch (direction) {
               case 'NORTH':
@@ -92,20 +92,7 @@ mapManager, partyManager) {
         }
     }
 
-    function getInvertedDirection(direction) {
-        switch (direction) {
-          case 'NORTH':
-            return 'SOUTH';
-          case 'EAST':
-            return 'WEST';
-          case 'SOUTH':
-            return 'NORTH';
-          case 'WEST':
-            return 'EAST';
-          default:
-            console.error(`Invalid direction! direction:'${direction}'`);
-        }
-    }
+
 
     return new Navigation();
 
