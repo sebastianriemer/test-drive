@@ -55,8 +55,8 @@ public class StartController {
     @GetMapping("/ajax/gameState/{playerName}")
     @ResponseBody
     public GameState getGameState(@PathVariable(required = true) String playerName) throws IOException {
-        RegionalMap regionalMap = loadRegionalMap();
-        BattleMap battleMap = loadBattleMap();
+        RegionalMap regionalMap = loadRegionalMap("escape_from_the_royal_banquet");
+        BattleMap battleMap = loadBattleMap("escape_from_the_royal_banquet");
         Party party = loadParty();
 
         MonsterGenerator monsterGenerator = new MonsterGenerator();
@@ -141,13 +141,14 @@ public class StartController {
         return ImageIO.read(inputStream);
     }
 
-    private RegionalMap loadRegionalMap() throws IOException {
+    private RegionalMap loadRegionalMap(String mapName) throws IOException {
 
         RegionalMap regionalMap = new RegionalMap(
-                "img/worlds/abalon/map.png",
-                getImageFromPath("static/img/worlds/abalon/map.png"),
-                getImageFromPath("static/img/worlds/abalon/street_map.png"),
-                getImageFromPath("static/img/worlds/abalon/floor_map.png"),
+                "img/worlds/"+mapName+"/map.png",
+                getImageFromPath("static/img/worlds/"+mapName+"/map.png"),
+                getImageFromPath("static/img/worlds/"+mapName+"/street_map.png"),
+                getImageFromPath("static/img/worlds/"+mapName+"/floor_map.png"),
+                getImageFromPath("static/img/worlds/"+mapName+"/ceiling_map.png"),
                 resourcePatternResolver.getResources("classpath:static/img/walls/**/*.png"),
                 //resourcePatternResolver.getResources("classpath:static/img/walls/*.png"),
                 resourcePatternResolver.getResources("classpath:static/img/floors/*.png"),
@@ -199,11 +200,11 @@ public class StartController {
     }
 
     // TODO: think about whether a textureMap-like initialization really makes sense for a battleMap?
-    private BattleMap loadBattleMap() throws IOException {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("static/img/worlds/abalon/battle_map.png");
+    private BattleMap loadBattleMap(String mapName) throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("static/img/worlds/"+mapName+"/battle_map.png");
         BufferedImage image = ImageIO.read(inputStream);
         BattleMap battleMap = new BattleMap(image,
-                "img/worlds/abalon/battle_map.png",
+                "img/worlds/"+mapName+"/battle_map.png",
                 resourcePatternResolver.getResources("classpath:static/img/battle/*.png")
         );
 
@@ -223,7 +224,7 @@ public class StartController {
 
 
 
-        party.setPartyPosition(new PartyPosition(1, 1, Direction.EAST));
+        party.setPartyPosition(new PartyPosition(1, 1, Direction.SOUTH));
         return party;
     }
 }

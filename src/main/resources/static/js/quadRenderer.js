@@ -30,6 +30,12 @@ define([], function () {
         ctx.restore();
     }
 
+    function drawPoint(ctx,
+            point) {
+            ctx.fillStyle = '#ED1C24';
+            ctx.fillRect(point.x,point.y,3,3);
+        }
+
     function drawQuad(ctx, tex, pA, pB, pC, pD, uv) {
         if (!tex || !uv) return;
 
@@ -136,5 +142,5 @@ define([], function () {
 
 
 
-    return { drawQuad, drawQuadGrid, uvFront, uvLeft, uvRight, uvFloor };
+    return { drawPoint, drawQuad, drawQuadGrid, uvFront, uvLeft, uvRight, uvFloor };
 });

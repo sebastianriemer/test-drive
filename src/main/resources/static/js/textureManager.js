@@ -30,11 +30,22 @@ define(['mapManager'], function (mapManager) {
                 return textureSets[set][index];
             }
 
-            console.warn("Texture not found in set", textureRef);
+            //console.warn("Texture not found in set", textureRef);
             return undefined;
         };
 
         this.getFloorTexture = function(textureKey) {
+            if (textureKey === 'ffffff' || textureKey === 'bcbcbc') {
+                return undefined;
+            }
+            if (mapManager.regionalMap.mapData.floorTextureMap[textureKey]
+                && mapManager.regionalMap.mapData.floorTextureMap[textureKey].image) {
+                return mapManager.regionalMap.mapData.floorTextureMap[textureKey].image;
+            }
+            return undefined;
+            //return mapManager.regionalMap.mapData.wallTextureMap['000000'].image;
+        }
+        this.getCeilingTexture = function(textureKey) {
             if (textureKey === 'ffffff' || textureKey === 'bcbcbc') {
                 return undefined;
             }

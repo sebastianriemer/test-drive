@@ -31,6 +31,23 @@ define(['mapManager', 'projection', 'eventBus', 'textureManager'], function (map
             saveWallChange(block, camera, wall);
         };
 
+        this.clearTexture = function() {
+            const camera = getCamera();
+            const block = getTargetBlock(camera);
+            const wall = getTargetWall(block, camera);
+            if (!wall) return;
+
+            // 🔥 APPLY TO WALL (NEW STRUCTURE)
+            wall.textureSet = undefined;
+            wall.textureIndex = undefined;
+
+            console.log("Cleared:", wall);
+
+            eventBus.emit("wallTextureChanged: ", wall);
+            // 🔥 SAVE TO BACKEND
+            saveWallChange(block, camera, wall);
+        }
+
         function getCamera() {
             const map = mapManager.regionalMap;
             const camera = {

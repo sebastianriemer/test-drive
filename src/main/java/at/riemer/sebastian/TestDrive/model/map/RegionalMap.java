@@ -26,12 +26,13 @@ public class RegionalMap {
                        BufferedImage mapAsImage,
                        BufferedImage streetMapAsImage,
                        BufferedImage floorMapAsImage,
+                       BufferedImage ceilingMapAsImage,
                        Resource[] wallResources,
                        Resource[] floorResources,
                        Resource[] roomResources
     ) {
         this.mapFilename = mapFilename;
-        initBlockMap(mapAsImage, floorMapAsImage, streetMapAsImage);
+        initBlockMap(mapAsImage, floorMapAsImage, ceilingMapAsImage, streetMapAsImage);
         initWallTextureSets(wallResources);
         initFloorTextureMap(floorResources);
         initRoomTextureMap(roomResources);
@@ -40,6 +41,7 @@ public class RegionalMap {
 
     private void initBlockMap(BufferedImage mapAsImage,
                               BufferedImage floorMapAsImage,
+                              BufferedImage ceilingMapAsImage,
                               BufferedImage streetMapAsImage) {
         StreetNameLookupService streetNameLookupService = new StreetNameLookupService();
 
@@ -49,7 +51,7 @@ public class RegionalMap {
             for (int x = 0; x < mapAsImage.getWidth() / 3; x++) {
                 // String centerHex = getImagePixelAsHexString(textureMapAsImage, x * 3 + 1, y * 3 + 1);
                 String floor = getImagePixelAsHexString(floorMapAsImage, x * 3 + 1, y * 3 + 1);
-                String ceiling = "ffffff"; // no ceilingMap exists yet; could be of interest later on, as in underground
+                String ceiling = getImagePixelAsHexString(ceilingMapAsImage, x * 3 + 1, y * 3 + 1);
                 // dungeons
                 String centerHexOnStreetMap = getImagePixelAsHexString(streetMapAsImage, x * 3 + 1, y * 3 + 1);
                 Block block = new Block(x,

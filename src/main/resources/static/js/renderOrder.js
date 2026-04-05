@@ -7,6 +7,7 @@ define([], function() {
         ctx,
         renderQuad,
         drawFloor,
+        drawCeiling,
         drawLeft,
         drawRight,
         drawFront
@@ -14,6 +15,9 @@ define([], function() {
         // Floors
         for (let dx = -range; dx <= range; dx++) {
             drawFloor(dx, dy, camera, ctx, renderQuad);
+        }
+        for (let dx = -range; dx <= range; dx++) {
+            drawCeiling(dx, dy, camera, ctx, renderQuad);
         }
 
         // LEFT → CENTER
@@ -39,6 +43,7 @@ define([], function() {
         ctx,
         renderQuad,
         drawNearFloor,
+        drawNearCeiling,
         drawNearLeft,
         drawNearRight,
         drawNearFront
@@ -47,6 +52,10 @@ define([], function() {
         for (let dx = -range; dx <= range; dx++) {
             drawNearFloor(dx, near, camera, ctx, renderQuad);
         }
+        for (let dx = -range; dx <= range; dx++) {
+            drawNearCeiling(dx, near, camera, ctx, renderQuad);
+        }
+
 
         // same correct ordering as normal rows
         for (let dx = -range; dx < 0; dx++) {

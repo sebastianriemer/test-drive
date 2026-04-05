@@ -14,9 +14,10 @@ define(['eventBus', 'gameState', 'navigation', 'textureEditor'],
            if (data.key === "ArrowRight") navigation.turnRight();
            if (data.key === "ArrowDown") navigation.moveBackward();
 
-            if (["1","2","3","4","5"].includes(data.key)) {
+            if (["1","2","3","4","5","6","7","8","9"].includes(data.key)) {
                 textureEditor.applyTexture(parseInt(data.key));
             }
+            if (data.key === "c") textureEditor.clearTexture();
 
        };
         this.getTextForBelowMainWindow = function() {
