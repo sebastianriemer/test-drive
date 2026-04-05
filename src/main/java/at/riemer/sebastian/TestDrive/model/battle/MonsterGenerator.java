@@ -19,5 +19,11 @@ public class MonsterGenerator {
 
     }
 
+    public List<MonsterGroup> getStaticMonsterGroups() {
+        return staticMonsterGroups;
+    }
 
+    public List<MonsterGroup> getGenericMonsterGroups() {
+        return genericMonsterGroups;
+    }
 }

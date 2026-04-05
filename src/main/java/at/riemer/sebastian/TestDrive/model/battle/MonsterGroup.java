@@ -14,6 +14,11 @@ public class MonsterGroup {
             monsterList.add(monster.createMonster());
             i++;
         }
+    }
 
+    public List<Monster> getMonsterList() {
+        return monsterList;
     }
 }
+
+

@@ -1,7 +1,9 @@
 package at.riemer.sebastian.TestDrive.controller;
 
 import at.riemer.sebastian.TestDrive.model.Direction;
+import at.riemer.sebastian.TestDrive.model.EscapeTheRoyalBanquet;
 import at.riemer.sebastian.TestDrive.model.GameState;
+import at.riemer.sebastian.TestDrive.model.World;
 import at.riemer.sebastian.TestDrive.model.battle.MonsterGenerator;
 import at.riemer.sebastian.TestDrive.model.battle.MonsterGroup;
 import at.riemer.sebastian.TestDrive.model.battle.MonsterParty;
@@ -47,7 +49,7 @@ public class StartController {
 
     @GetMapping("/ajax/dashBoard")
     @ResponseBody
-    public DashBoard getDashBoard() throws IOException {
+    public DashBoard getDashBoard() {
 
         return new DashBoard();
     }
@@ -55,17 +57,10 @@ public class StartController {
     @GetMapping("/ajax/gameState/{playerName}")
     @ResponseBody
     public GameState getGameState(@PathVariable(required = true) String playerName) throws IOException {
-        RegionalMap regionalMap = loadRegionalMap("escape_from_the_royal_banquet");
-        BattleMap battleMap = loadBattleMap("escape_from_the_royal_banquet");
+        // Todo: WorldLoader
+        EscapeTheRoyalBanquet escapeTheRoyalBanquet = new EscapeTheRoyalBanquet(resourcePatternResolver);
         Party party = loadParty();
-
-        MonsterGenerator monsterGenerator = new MonsterGenerator();
-        MonsterParty monsterParty = new MonsterParty();
-        monsterParty.addFrontCenter(new MonsterGroup(new MonsterRat(), 5));
-
-        GameState gameState = new GameState(
-                regionalMap,
-                battleMap,
+        GameState gameState = new GameState(escapeTheRoyalBanquet,
                 party
         );
         return gameState;
@@ -75,9 +70,9 @@ public class StartController {
     @ResponseBody
     public Map<String, String> updateWallTexture(@RequestBody WallUpdateDTO dto) throws IOException {
 
-        RegionalMap map = getGameState("sebus").getRegionalMap(); // however you store it
+        World world = getGameState("sebus").getWorld();
 
-        Block block = map.getBlockMap().get(dto.getY()).get(dto.getX());
+        Block block = world.getRegionalMap().getBlockMap().get(dto.getY()).get(dto.getX());
 
         Wall wall = switch (dto.getDirection()) {
             case "NORTH" -> block.getNorthWall();
@@ -89,16 +84,16 @@ public class StartController {
 
         wall.setTexture(dto.getSet(), dto.getIndex());
 
-        saveMapTextures(map);
+        saveMapTextures(world);
 
         return Map.of("status", "ok");
     }
 
-    private void saveMapTextures(RegionalMap map) throws IOException {
+    private void saveMapTextures(World world) throws IOException {
 
         List<Map<String, Object>> result = new ArrayList<>();
 
-        for (List<Block> row : map.getBlockMap()) {
+        for (List<Block> row : world.getRegionalMap().getBlockMap()) {
             for (Block block : row) {
 
                 Map<String, Object> entry = new HashMap<>();
@@ -122,7 +117,7 @@ public class StartController {
 
         mapper.writerWithDefaultPrettyPrinter()
                 .writeValue(
-                        new File("src/main/resources/static/img/worlds/abalon/wallTextures.json"),
+                        new File("src/main/resources/static/img/worlds/"+ world.getMapName() + "/wallTextures.json"),
                         //new File("wallTextures.json"),
                         result);
     }
@@ -136,94 +131,14 @@ public class StartController {
         }
     }
 
-    private BufferedImage getImageFromPath(String path) throws IOException {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path);
-        return ImageIO.read(inputStream);
-    }
-
-    private RegionalMap loadRegionalMap(String mapName) throws IOException {
-
-        RegionalMap regionalMap = new RegionalMap(
-                "img/worlds/"+mapName+"/map.png",
-                getImageFromPath("static/img/worlds/"+mapName+"/map.png"),
-                getImageFromPath("static/img/worlds/"+mapName+"/street_map.png"),
-                getImageFromPath("static/img/worlds/"+mapName+"/floor_map.png"),
-                getImageFromPath("static/img/worlds/"+mapName+"/ceiling_map.png"),
-                resourcePatternResolver.getResources("classpath:static/img/walls/**/*.png"),
-                //resourcePatternResolver.getResources("classpath:static/img/walls/*.png"),
-                resourcePatternResolver.getResources("classpath:static/img/floors/*.png"),
-                resourcePatternResolver.getResources("classpath:static/img/rooms/*.png")
-        );
-        loadWallTextures(regionalMap);
-        return regionalMap;
-    }
-
-    private void loadWallTextures(RegionalMap map) throws IOException {
-
-        File file = new File("src/main/resources/static/img/worlds/abalon/wallTextures.json");
-
-        if (!file.exists()) {
-            logger.warn("No wallTextures.json found, skipping load.");
-            return;
-        }
-
-        logger.debug("Loading wall textures from JSON...");
-
-        ObjectMapper mapper = new ObjectMapper();
-
-        List<Map<String, Object>> data = mapper.readValue(
-                file,
-                new com.fasterxml.jackson.core.type.TypeReference<List<Map<String, Object>>>() {}
-        );
-
-        for (Map<String, Object> entry : data) {
-
-            int x = (int) entry.get("x");
-            int y = (int) entry.get("y");
-
-            Block block = map.getBlockMap().get(y).get(x);
-
-            Map<String, Map<String, Integer>> walls =
-                    (Map<String, Map<String, Integer>>) entry.get("walls");
-
-            apply(block.getNorthWall(), walls.get("north"));
-            apply(block.getEastWall(),  walls.get("east"));
-            apply(block.getSouthWall(), walls.get("south"));
-            apply(block.getWestWall(),  walls.get("west"));
-        }
-    }
-
-    private void apply(Wall wall, Map<String, Integer> data) {
-        if (data != null) {
-            wall.setTexture(data.get("set"), data.get("index"));
-        }
-    }
-
-    // TODO: think about whether a textureMap-like initialization really makes sense for a battleMap?
-    private BattleMap loadBattleMap(String mapName) throws IOException {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("static/img/worlds/"+mapName+"/battle_map.png");
-        BufferedImage image = ImageIO.read(inputStream);
-        BattleMap battleMap = new BattleMap(image,
-                "img/worlds/"+mapName+"/battle_map.png",
-                resourcePatternResolver.getResources("classpath:static/img/battle/*.png")
-        );
-
-        return battleMap;
-    }
-
     private Party loadParty() {
         Party party = new Party();
-
-
         party.add(new Otto());
         party.add(new Emma());
         party.add(new Joru());
         party.add(new Laura());
         party.add(new Simon());
         party.add(new Isabella());
-
-
-
         party.setPartyPosition(new PartyPosition(1, 1, Direction.SOUTH));
         return party;
     }

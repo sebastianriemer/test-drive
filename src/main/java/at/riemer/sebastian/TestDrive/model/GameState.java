@@ -5,24 +5,18 @@ import at.riemer.sebastian.TestDrive.model.map.RegionalMap;
 import at.riemer.sebastian.TestDrive.model.party.Party;
 
 public class GameState {
-    private RegionalMap regionalMap;
-    private BattleMap battleMap;
+    private World world;
     private Party party;
 
-    public GameState(RegionalMap regionalMap,
-                     BattleMap battleMap,
+    public GameState(World world,
                      Party party
     ) {
-        this.regionalMap = regionalMap;
-        this.battleMap = battleMap;
+        this.world = world;
         this.party = party;
     }
 
-    public RegionalMap getRegionalMap() {
-        return regionalMap;
-    }
-    public BattleMap getBattleMap() {
-        return battleMap;
+    public World getWorld() {
+        return world;
     }
 
     public Party getParty() {

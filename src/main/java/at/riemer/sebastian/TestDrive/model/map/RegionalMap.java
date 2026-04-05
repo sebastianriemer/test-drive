@@ -1,6 +1,7 @@
 package at.riemer.sebastian.TestDrive.model.map;
 
 import at.riemer.sebastian.TestDrive.service.StreetNameLookupService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +9,7 @@ import org.springframework.core.io.Resource;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -16,12 +18,13 @@ public class RegionalMap {
 
     private static final Logger logger = LoggerFactory.getLogger(RegionalMap.class);
 
-    private List<List<Block>> blockMap = new ArrayList<>();
-    private String mapFilename;
-    private Map<Integer, List<Texture>> wallTextureSets = new TreeMap<>();
-    private Map<String, Texture> floorTextureMap = new HashMap<>();
-    private Map<String, Texture> roomTextureMap = new HashMap<>();
-
+    private  List<List<Block>> blockMap = new ArrayList<>();
+    private  String mapFilename;
+    private  Map<Integer, List<Texture>> wallTextureSets = new TreeMap<>();
+    private  Map<String, Texture> floorTextureMap = new HashMap<>();
+    private  Map<String, Texture> roomTextureMap = new HashMap<>();
+    private  String skyColor;
+    private  String floorColor;
     public RegionalMap(String mapFilename,
                        BufferedImage mapAsImage,
                        BufferedImage streetMapAsImage,
@@ -29,13 +32,18 @@ public class RegionalMap {
                        BufferedImage ceilingMapAsImage,
                        Resource[] wallResources,
                        Resource[] floorResources,
-                       Resource[] roomResources
-    ) {
+                       Resource[] roomResources,
+                       String skyColor,
+                       String floorColor
+    ) throws IOException {
         this.mapFilename = mapFilename;
+        this.skyColor = skyColor;
+        this.floorColor = floorColor;
         initBlockMap(mapAsImage, floorMapAsImage, ceilingMapAsImage, streetMapAsImage);
         initWallTextureSets(wallResources);
         initFloorTextureMap(floorResources);
         initRoomTextureMap(roomResources);
+        this.loadWallTextures();
 
     }
 
@@ -68,36 +76,38 @@ public class RegionalMap {
             }
         }
     }
+    private void loadWallTextures() throws IOException {
+        File file = new File("src/main/resources/static/img/worlds/escape_from_the_royal_banquet/wallTextures.json");
+        if (!file.exists()) {
+            logger.warn("No wallTextures.json found, skipping load.");
+            return;
+        }
+        logger.debug("Loading wall textures from JSON...");
+        ObjectMapper mapper = new ObjectMapper();
+        List<Map<String, Object>> data = mapper.readValue(
+                file,
+                new com.fasterxml.jackson.core.type.TypeReference<>() {
+                }
+        );
 
-    public void applyWallTextures(List<WallTextureDTO> textures) {
-
-        for (WallTextureDTO dto : textures) {
-
-            Block block = blockMap.get(dto.getY()).get(dto.getX());
-
-            if (dto.getNorth() != null)
-                block.getNorthWall().setTexture(dto.getNorth().getSet(), dto.getNorth().getIndex());
-
-            if (dto.getEast() != null)
-                block.getEastWall().setTexture(dto.getEast().getSet(), dto.getEast().getIndex());
-
-            if (dto.getSouth() != null)
-                block.getSouthWall().setTexture(dto.getSouth().getSet(), dto.getSouth().getIndex());
-
-            if (dto.getWest() != null)
-                block.getWestWall().setTexture(dto.getWest().getSet(), dto.getWest().getIndex());
+        for (Map<String, Object> entry : data) {
+            int x = (int) entry.get("x");
+            int y = (int) entry.get("y");
+            Block block = this.getBlockMap().get(y).get(x);
+            Map<String, Map<String, Integer>> walls =
+                    (Map<String, Map<String, Integer>>) entry.get("walls");
+            apply(block.getNorthWall(), walls.get("north"));
+            apply(block.getEastWall(),  walls.get("east"));
+            apply(block.getSouthWall(), walls.get("south"));
+            apply(block.getWestWall(),  walls.get("west"));
         }
     }
 
-//    private void initWallTextureMap(Resource[] wallResources) {
-//        for (int i = 0; i < wallResources.length; i++) {
-//            this.wallTextureMap.put(
-//                    FilenameUtils.removeExtension(wallResources[i].getFilename()),
-//                    new Texture("img/walls/" + wallResources[i].getFilename())
-//            );
-//        }
-//    }
-
+    private void apply(Wall wall, Map<String, Integer> data) {
+        if (data != null) {
+            wall.setTexture(data.get("set"), data.get("index"));
+        }
+    }
     private void initWallTextureSets(Resource[] wallResources) {
         Map<Integer, List<Texture>> sets = new TreeMap<>();
 
@@ -170,8 +180,6 @@ public class RegionalMap {
         this.mapFilename = mapFilename;
     }
 
-
-
     public Map<String, Texture> getRoomTextureMap() {
         return roomTextureMap;
     }
@@ -182,5 +190,13 @@ public class RegionalMap {
 
     public Map<Integer, List<Texture>> getWallTextureSets() {
         return wallTextureSets;
+    }
+
+    public String getSkyColor() {
+        return skyColor;
+    }
+
+    public String getFloorColor() {
+        return floorColor;
     }
 }

@@ -13,8 +13,8 @@ RoamingMode, CombatMode) {
               return fetch('/ajax/gameState/sebus')
                   .then(response => response.json())
                   .then(data => {
-                      mapManager.initRegionalMap(data.regionalMap, data.party.partyPosition);
-                      mapManager.initBattleMap(data.battleMap);
+                      mapManager.initRegionalMap(data.world.regionalMap, data.party.partyPosition);
+                      mapManager.initBattleMap(data.world.battleMap);
                       partyManager.init(data.party);
                       textureManager.init(mapManager.regionalMap, mapManager.battleMap);
                   });
