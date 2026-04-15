@@ -5,7 +5,7 @@
     <title th:text="'Test D R I V E'"></title>
     <link href="/css/main.css" rel="stylesheet">
 </head>
-<body>
+<body class="bodyCss">
 <div id="blackScreen">
     <p>Zum Starten beliebige Taste drücken...</p>
 </div>
@@ -70,8 +70,7 @@
             <span id="nearValue">0.8</span>
         </label>
         <br>
-    </div>
-    <div style="margin-left: 20px;">
+
         <label>Depth:
             <input type="range" id="depthSlider" min="0" max="10">
             <span id="depthValue">5</span>
@@ -87,8 +86,36 @@
         <label>Image soothing:
             <input type="checkbox" id="imageSoothingCheckbox" value="true">
         </label>
+        <br>
         <label>Grid mode:
             <input type="checkbox" id="gridModeCheckbox" value="true">
+        </label>
+    </div>
+    <div style="margin-left: 20px;">
+
+        <label>lightingType:
+            <input type="range" id="lightingTypeSlider" min="0" max="2" step="1">
+            <span id="lightingTypeValue">0</span>
+        </label>
+        <br>
+        <label>playerLightX:
+            <input type="range" id="playerLightXSlider" min="-200" max="600" step="1">
+            <span id="playerLightXValue">0.5</span>
+        </label>
+        <br>
+        <label>playerLightY:
+            <input type="range" id="playerLightYSlider" min="-200" max="600" step="1">
+            <span id="playerLightYValue">0.5</span>
+        </label>
+        <br>
+        <label>playerLightTime:
+            <input type="range" id="playerLightTimeSlider" min="0.0001" max="0.1" step="0.0001">
+            <span id="playerLightTimeValue">0.5</span>
+        </label>
+        <br>
+        <label>playerLightRadius:
+            <input type="range" id="playerLightRadiusSlider" min="5" max="2000" step="5">
+            <span id="playerLightRadiusValue">0.5</span>
         </label>
     </div>
 </div>

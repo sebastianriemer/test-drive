@@ -37,6 +37,14 @@ define(['mapManager', 'navigation', 'eventBus'], function (mapManager, navigatio
             bindSlider("widthSlider", "width");
             bindCheckbox("imageSoothingCheckbox", "imageSmoothingEnabled");
             bindCheckbox("gridModeCheckbox", "gridModeEnabled");
+
+            bindSlider("scaleSlider", "scale");
+
+            bindSlider("lightingTypeSlider", "lightingType");
+            bindSlider("playerLightXSlider", "playerLightX");
+            bindSlider("playerLightYSlider", "playerLightY");
+            bindSlider("playerLightTimeSlider", "playerLightTime");
+            bindSlider("playerLightRadiusSlider", "playerLightRadius");
         };
 
     };

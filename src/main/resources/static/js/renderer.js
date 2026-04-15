@@ -1,12 +1,10 @@
-define([
-    'canvas',
-    'textureManager',
-    'mapManager',
-    'projection',
-    'quadRenderer',
-    'renderOrder'
-], function(canvas, textureManager, mapManager, projection, quadRenderer,renderOrder){
-
+define(['logger', 'canvas', 'textureManager', 'mapManager', 'projection', 'quadRenderer', 'renderOrder', 'lighting'
+], function(log, canvas, textureManager, mapManager, projection, quadRenderer, renderOrder, lighting) {
+    const RENDER_MODES = {
+        TEXTURED: 'TEXTURED',
+        GRID: 'GRID'
+    };
+    let currentMode = RENDER_MODES.GRID;
     const map = mapManager.regionalMap;
     const CAMERA_OFFSET = 1;
     const RENDER_SETTINGS = {
@@ -17,46 +15,22 @@ define([
         near: 0.25,
         maxDepth: 10,
         imageSmoothingEnabled: true,
-        gridModeEnabled: false
+        gridModeEnabled: false,
+        playerLightX: 250,
+        playerLightY: 315,
+        playerLightTime: 0.004,
+        playerLightRadius: 305,
+        lightingType: 0
     };
 
-    const RENDER_MODES = {
-        TEXTURED: 'TEXTURED',
-        GRID: 'GRID'
-    };
+    lighting.setRenderSettings(RENDER_SETTINGS);
+    lighting.setMode('WORLD');
+    //lighting.setType('PLAYER_FLICKER');
 
-    let currentMode = RENDER_MODES.GRID;
-
-    const { PROJ, project, projectRaw } =
-        projection.createProjection(RENDER_SETTINGS);
-
+    const { PROJ, project, projectRaw } = projection.createProjection(RENDER_SETTINGS);
     const { drawPoint, drawQuad, drawQuadGrid, uvFront, uvLeft, uvRight, uvFloor } = quadRenderer;
 
-    function getShadeFactor(distance) {
-        const max = RENDER_SETTINGS.maxDepth;
-        let shadeFactor = Math.max(0.05, 0.4 - (distance / (max * 2)));
-        return shadeFactor;
-    }
-
-    function applyShade(ctx, quad, shade) {
-        ctx.save();
-
-        ctx.globalAlpha = 1 - shade; // darker = more alpha
-        ctx.fillStyle = "#000";
-
-        ctx.beginPath();
-        ctx.moveTo(quad.pA.x, quad.pA.y);
-        ctx.lineTo(quad.pB.x, quad.pB.y);
-        ctx.lineTo(quad.pC.x, quad.pC.y);
-        ctx.lineTo(quad.pD.x, quad.pD.y);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.restore();
-    }
-
-    function getRenderQuad() {
-        return currentMode === RENDER_MODES.TEXTURED
+    function getRenderQuad() { return currentMode === RENDER_MODES.TEXTURED
             ? drawQuad
             : drawQuadGrid;
     }
@@ -84,6 +58,7 @@ define([
         };
     }
 
+
     function drawFloor(dx, dy, camera, ctx, renderQuad) {
         const block = getBlock(dx, dy, camera);
         if (!block) return;
@@ -101,31 +76,8 @@ define([
         renderQuad(ctx, tex, pA, pB, pC, pD,
             tex ? uvFloor(tex.width, tex.height, camera) : null);
         // ✨ apply shading
-        const shade = getShadeFactor(dy);
-        applyShade(ctx, quad, shade);
-    }
-
-
-    function getWallTextureRef(wall) {
-        if (wall.textureSet == null || wall.textureIndex == null) {
-            return null;
-        }
-
-        return {
-            set: wall.textureSet,
-            index: wall.textureIndex
-        };
-    }
-    function getWallTextureWithFallback(wall) {
-        let tex = textureManager.getWallTexture(getWallTextureRef(wall));
-        if (!tex && currentMode === RENDER_MODES.TEXTURED) {
-            if (wall.solid) {
-                tex = textureManager.getWallTexture({ set: 9, index: 0 });
-            } else {
-                return;
-            }
-        }
-        return tex;
+        let shade = lighting.getShadeFactor(dx, dy, [lighting.getPlayerLight()]);        
+        lighting.applyShade(ctx, quad, shade);
     }
 
     function drawFront(dx, dy, camera, ctx, renderQuad) {
@@ -135,7 +87,7 @@ define([
         const wall = projection.getWall(block, camera, 'FRONT');
         if (!wall) return;
 
-        let tex = getWallTextureWithFallback(wall);
+        let tex = textureManager.getWallTextureWithFallback(wall);
         if (!tex) return;
 
         const pA = project(dx-0.5, dy + CAMERA_OFFSET);
@@ -151,8 +103,8 @@ define([
             tex ? uvFront(tex.width, tex.height) : null
         );
         // ✨ apply shading
-        const shade = getShadeFactor(dy);
-        applyShade(ctx, quad, shade);
+        let shade = lighting.getShadeFactor(dx, dy, [lighting.getPlayerLight()]);
+        lighting.applyShade(ctx, quad, shade);
     }
 
     function drawLeft(dx, dy, camera, ctx, renderQuad) {
@@ -161,7 +113,7 @@ define([
 
         const wall = projection.getWall(block, camera, 'LEFT');
         if (!wall) return;
-        let tex = getWallTextureWithFallback(wall);
+        let tex = textureManager.getWallTextureWithFallback(wall);
         if (!tex) return;
 
         const quad = buildWallQuad(dx-0.5, dy, dy+1);
@@ -170,8 +122,8 @@ define([
         renderQuad(ctx, tex, quad.pA, quad.pB, quad.pC, quad.pD,
             tex ? uvLeft(tex.width, tex.height) : null);
         // ✨ apply shading
-        const shade = getShadeFactor(dy);
-        applyShade(ctx, quad, shade);
+        let shade = lighting.getShadeFactor(dx, dy, [lighting.getPlayerLight()]);
+        lighting.applyShade(ctx, quad, shade);
     }
 
     function drawRight(dx, dy, camera, ctx, renderQuad) {
@@ -180,7 +132,7 @@ define([
 
         const wall = projection.getWall(block, camera, 'RIGHT');
         if (!wall) return;
-        let tex = getWallTextureWithFallback(wall);
+        let tex = textureManager.getWallTextureWithFallback(wall);
         if (!tex) return;
 
         const quad = buildWallQuad(dx+0.5, dy, dy+1);
@@ -189,10 +141,9 @@ define([
         renderQuad(ctx, tex, quad.pA, quad.pB, quad.pC, quad.pD,
             tex ? uvRight(tex.width, tex.height) : null);
         // ✨ apply shading
-        const shade = getShadeFactor(dy);
-        applyShade(ctx, quad, shade);
+        let shade = lighting.getShadeFactor(dx, dy, [lighting.getPlayerLight()]);
+        lighting.applyShade(ctx, quad, shade);
     }
-
 
     function drawCeiling(dx, dy, camera, ctx, renderQuad) {
         //return;
@@ -222,13 +173,13 @@ define([
             tex ? uvFloor(tex.width, tex.height, camera) : null
         );
         // ✨ apply shading
-        const shade = getShadeFactor(dy);
-        applyShade(ctx, quad, shade);
+        let shade = lighting.getShadeFactor(dx, dy, [lighting.getPlayerLight()]);
+        lighting.applyShade(ctx, quad, shade);
+
     }
 
-
     const renderer = {
-        draw: function(){
+        draw: function() {
             const ctx = canvas.contextHolder.context;
 
             const camera = {
@@ -257,7 +208,8 @@ define([
             PROJ.yOffset = testProj ? (PROJ.horizonY()-testProj.y) : 0;
 
             // ✅ ORIGINAL LOOP (no nearest row)
-            for (let dy = RENDER_SETTINGS.maxDepth; dy >= 0; dy--) {
+            //for (let dy = RENDER_SETTINGS.maxDepth; dy >= 0; dy--) {
+                //log.debug('Render dy:', dy);
                 renderOrder.drawScene({
                     maxDepth: RENDER_SETTINGS.maxDepth,
                     near: RENDER_SETTINGS.near,
@@ -274,7 +226,8 @@ define([
                     drawFront,
 
                 });
-            }
+            //}
+            lighting.renderLighting(ctx, camera);
         },
 
         setMode: function(mode) {

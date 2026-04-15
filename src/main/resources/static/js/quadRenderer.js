@@ -36,9 +36,22 @@ define([], function () {
             ctx.fillRect(point.x,point.y,3,3);
         }
 
+    function snap(p) {
+        return p;
+        // Sieht cool aus, macht aber helle Linien noch heller!
+        /*return {
+            x: Math.round(p.x),
+            y: Math.round(p.y)
+        };*/
+    }
+
     function drawQuad(ctx, tex, pA, pB, pC, pD, uv) {
         if (!tex || !uv) return;
 
+        pA = snap(pA);
+        pB = snap(pB);
+        pC = snap(pC);
+        pD = snap(pD);
         drawTriangle(ctx, tex, pA, pB, pC, uv.A.u, uv.A.v, uv.B.u, uv.B.v, uv.C.u, uv.C.v);
         drawTriangle(ctx, tex, pA, pC, pD, uv.A.u, uv.A.v, uv.C.u, uv.C.v, uv.D.u, uv.D.v);
     }

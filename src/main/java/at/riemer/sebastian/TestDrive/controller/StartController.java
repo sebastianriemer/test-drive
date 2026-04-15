@@ -139,7 +139,7 @@ public class StartController {
         party.add(new Laura());
         party.add(new Simon());
         party.add(new Isabella());
-        party.setPartyPosition(new PartyPosition(1, 1, Direction.SOUTH));
+        party.setPartyPosition(new PartyPosition(4, 2, Direction.EAST));
         return party;
     }
 }

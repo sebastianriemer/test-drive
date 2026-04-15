@@ -62,3 +62,8 @@
 
 
 /* END Config for black screen intro */
+
+.bodyCss {
+    background-color: darkslategray;
+    color: orange;    
+}

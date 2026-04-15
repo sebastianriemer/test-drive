@@ -7,6 +7,9 @@
     "watch-cli": "^0.2.3"
   },
   "scripts": {
-     "watch-eslint": "npx chokidar \"**/*.js\" -c 'node_modules/.bin/eslint .'"
+    "watch-eslint": "npx chokidar \"**/*.js\" -c 'node_modules/.bin/eslint .'"
+  },
+  "dependencies": {
+    "loglevel": "^1.9.2"
   }
 }

@@ -1,4 +1,7 @@
 require.config({
+    paths: {
+        'loglevel': 'lib/loglevel'
+    }
 });
 
 require(['canvas', 'gameState', 'gameModeManager',
