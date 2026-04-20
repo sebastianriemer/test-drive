@@ -1,36 +1,42 @@
 package at.riemer.sebastian.TestDrive.controller;
 
-import at.riemer.sebastian.TestDrive.model.Direction;
-import at.riemer.sebastian.TestDrive.model.EscapeTheRoyalBanquet;
-import at.riemer.sebastian.TestDrive.model.GameState;
-import at.riemer.sebastian.TestDrive.model.World;
-import at.riemer.sebastian.TestDrive.model.battle.MonsterGenerator;
-import at.riemer.sebastian.TestDrive.model.battle.MonsterGroup;
-import at.riemer.sebastian.TestDrive.model.battle.MonsterParty;
-import at.riemer.sebastian.TestDrive.model.battle.monster.MonsterRat;
-import at.riemer.sebastian.TestDrive.model.map.*;
-import at.riemer.sebastian.TestDrive.model.party.Party;
-import at.riemer.sebastian.TestDrive.model.party.PartyPosition;
-import at.riemer.sebastian.TestDrive.model.party.character.playerCharacter.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import at.riemer.sebastian.TestDrive.model.Direction;
+import at.riemer.sebastian.TestDrive.model.EscapeTheRoyalBanquet;
+import at.riemer.sebastian.TestDrive.model.GameState;
+import at.riemer.sebastian.TestDrive.model.World;
+import at.riemer.sebastian.TestDrive.model.map.Block;
+import at.riemer.sebastian.TestDrive.model.map.Wall;
+import at.riemer.sebastian.TestDrive.model.map.WallUpdateDTO;
+import at.riemer.sebastian.TestDrive.model.party.Party;
+import at.riemer.sebastian.TestDrive.model.party.PartyPosition;
+import at.riemer.sebastian.TestDrive.model.party.character.playerCharacter.Emma;
+import at.riemer.sebastian.TestDrive.model.party.character.playerCharacter.Isabella;
+import at.riemer.sebastian.TestDrive.model.party.character.playerCharacter.Joru;
+import at.riemer.sebastian.TestDrive.model.party.character.playerCharacter.Laura;
+import at.riemer.sebastian.TestDrive.model.party.character.playerCharacter.Otto;
+import at.riemer.sebastian.TestDrive.model.party.character.playerCharacter.Simon;
 
 @Controller
 public class StartController {
@@ -139,7 +145,7 @@ public class StartController {
         party.add(new Laura());
         party.add(new Simon());
         party.add(new Isabella());
-        party.setPartyPosition(new PartyPosition(4, 2, Direction.EAST));
+        party.setPartyPosition(new PartyPosition(1, 1, Direction.NORTH));
         return party;
     }
 }

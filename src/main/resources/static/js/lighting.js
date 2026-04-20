@@ -1,13 +1,20 @@
 define(['logger'], function(log) {
 
     
-    const playerLight = {
-        x: 0,
-        y: 0,
+    const partyLightWithoutPosition = {        
         radius: 6,
-        intensity: 0.35,
+        intensity: 0.3,
         flicker: true
     };
+
+    const torchLight = {
+        x: 7,
+        y: 2,
+        radius: 5,
+        intensity: 0.8,
+        flicker: true
+    };
+
     const LIGHTING_MODES = {
         WORLD: 'WORLD',
         SCREEN: 'SCREEN'
@@ -248,8 +255,11 @@ define(['logger'], function(log) {
             return currentType;
         },
 
-        getPlayerLight: function() {
-            return playerLight;
+        getPartyLight: function(partyPosition) {
+            return {...partyLightWithoutPosition, ...partyPosition };            
+        },
+        getTorchLight: function() {
+            return torchLight;
         }
     }
 

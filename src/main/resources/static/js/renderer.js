@@ -76,7 +76,8 @@ define(['logger', 'canvas', 'textureManager', 'mapManager', 'projection', 'quadR
         renderQuad(ctx, tex, pA, pB, pC, pD,
             tex ? uvFloor(tex.width, tex.height, camera) : null);
         // ✨ apply shading
-        let shade = lighting.getShadeFactor(dx, dy, [lighting.getPlayerLight()]);        
+        //let shade = lighting.getShadeFactor(dx, dy, [lighting.getPartyLight(map.partyPosition), lighting.getTorchLight()]);        
+        let shade = lighting.getShadeFactor(block.x, block.y, [lighting.getPartyLight(map.partyPosition), lighting.getTorchLight()]);        
         lighting.applyShade(ctx, quad, shade);
     }
 
@@ -103,7 +104,8 @@ define(['logger', 'canvas', 'textureManager', 'mapManager', 'projection', 'quadR
             tex ? uvFront(tex.width, tex.height) : null
         );
         // ✨ apply shading
-        let shade = lighting.getShadeFactor(dx, dy, [lighting.getPlayerLight()]);
+        //let shade = lighting.getShadeFactor(dx, dy, [lighting.getPartyLight(map.partyPosition), lighting.getTorchLight()]);
+        let shade = lighting.getShadeFactor(block.x, block.y, [lighting.getPartyLight(map.partyPosition), lighting.getTorchLight()]);
         lighting.applyShade(ctx, quad, shade);
     }
 
@@ -122,7 +124,8 @@ define(['logger', 'canvas', 'textureManager', 'mapManager', 'projection', 'quadR
         renderQuad(ctx, tex, quad.pA, quad.pB, quad.pC, quad.pD,
             tex ? uvLeft(tex.width, tex.height) : null);
         // ✨ apply shading
-        let shade = lighting.getShadeFactor(dx, dy, [lighting.getPlayerLight()]);
+        //let shade = lighting.getShadeFactor(dx, dy, [lighting.getPartyLight(map.partyPosition), lighting.getTorchLight()]);
+        let shade = lighting.getShadeFactor(block.x, block.y, [lighting.getPartyLight(map.partyPosition), lighting.getTorchLight()]);
         lighting.applyShade(ctx, quad, shade);
     }
 
@@ -141,7 +144,8 @@ define(['logger', 'canvas', 'textureManager', 'mapManager', 'projection', 'quadR
         renderQuad(ctx, tex, quad.pA, quad.pB, quad.pC, quad.pD,
             tex ? uvRight(tex.width, tex.height) : null);
         // ✨ apply shading
-        let shade = lighting.getShadeFactor(dx, dy, [lighting.getPlayerLight()]);
+        //let shade = lighting.getShadeFactor(dx, dy, [lighting.getPartyLight(map.partyPosition), lighting.getTorchLight()]);
+        let shade = lighting.getShadeFactor(block.x, block.y, [lighting.getPartyLight(map.partyPosition), lighting.getTorchLight()]);
         lighting.applyShade(ctx, quad, shade);
     }
 
@@ -173,7 +177,8 @@ define(['logger', 'canvas', 'textureManager', 'mapManager', 'projection', 'quadR
             tex ? uvFloor(tex.width, tex.height, camera) : null
         );
         // ✨ apply shading
-        let shade = lighting.getShadeFactor(dx, dy, [lighting.getPlayerLight()]);
+        //let shade = lighting.getShadeFactor(dx, dy, [lighting.getPartyLight(map.partyPosition), lighting.getTorchLight()]);
+        let shade = lighting.getShadeFactor(block.x, block.y, [lighting.getPartyLight(map.partyPosition), lighting.getTorchLight()]);
         lighting.applyShade(ctx, quad, shade);
 
     }
