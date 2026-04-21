@@ -38,6 +38,10 @@
             Your browser does not support the HTML5 canvas tag.
         </canvas>
     </div>
+    <div id="debugPosition" style="font-family: monospace; margin-top: 10px;">
+        X: <span id="posX">0</span>,
+        Y: <span id="posY">0</span>
+    </div>
 </div>
 
 <div th:text="'It is, ' + ${nowDateTime} + '!'"></div>
@@ -95,7 +99,7 @@
 
         <label>lightingType:
             <input type="range" id="lightingTypeSlider" min="0" max="2" step="1">
-            <span id="lightingTypeValue">0</span>
+            <span id="lightingTypeValue">1</span>
         </label>
         <br>
         <label>playerLightX:

@@ -20,7 +20,7 @@ define(['logger', 'canvas', 'textureManager', 'mapManager', 'projection', 'quadR
         playerLightY: 315,
         playerLightTime: 0.004,
         playerLightRadius: 305,
-        lightingType: 0
+        lightingType: 1
     };
 
     lighting.setRenderSettings(RENDER_SETTINGS);

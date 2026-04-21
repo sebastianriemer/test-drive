@@ -40,6 +40,7 @@ require(['canvas', 'gameState', 'gameModeManager',
         }
 
         function draw() {
+            updateDebugUI();
             //dashBoard.draw();
             runeTableWindow.draw();
             interplayWindow.draw();
@@ -108,6 +109,12 @@ require(['canvas', 'gameState', 'gameModeManager',
                 mapManager.regionalMap.partyPosition.y*3*2,
                 3*2,
                 3*2);
+        }
+        function updateDebugUI() {
+            const pos = mapManager.regionalMap.partyPosition;
+
+            document.getElementById('posX').textContent = pos.x;
+            document.getElementById('posY').textContent = pos.y;
         }
     }
 

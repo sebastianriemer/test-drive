@@ -8,10 +8,10 @@ define(['logger'], function(log) {
     };
 
     const torchLight = {
-        x: 7,
-        y: 2,
-        radius: 5,
-        intensity: 0.8,
+        x: 2,
+        y: 4,
+        radius: 3,
+        intensity: 0.5,
         flicker: true
     };
 

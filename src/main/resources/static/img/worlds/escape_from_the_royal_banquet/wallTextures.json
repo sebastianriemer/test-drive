@@ -19,7 +19,7 @@
   "walls" : {
     "south" : {
       "set" : 3,
-      "index" : 56
+      "index" : 3
     }
   },
   "x" : 3,
@@ -188,11 +188,11 @@
     },
     "south" : {
       "set" : 3,
-      "index" : 22
+      "index" : 1
     },
     "west" : {
       "set" : 3,
-      "index" : 21
+      "index" : 4
     }
   },
   "x" : 4,

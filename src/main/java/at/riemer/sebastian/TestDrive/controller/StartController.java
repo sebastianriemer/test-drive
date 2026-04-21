@@ -145,7 +145,7 @@ public class StartController {
         party.add(new Laura());
         party.add(new Simon());
         party.add(new Isabella());
-        party.setPartyPosition(new PartyPosition(1, 1, Direction.NORTH));
+        party.setPartyPosition(new PartyPosition(1, 1, Direction.SOUTH));
         return party;
     }
 }
